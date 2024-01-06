@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+if ! $(which curl 1>/dev/null) || ! $(which jq 1>/dev/null) ; then
+  printf "$0 "
+  echo 'requires `curl` and `jq`'
+  exit 1
+fi
+
+# List the models the given token has access to
+curl -s https://api.openai.com/v1/models \
+  --header "Authorization: Bearer $OPENAI_API_KEY" \
+  | jq -r '.data[].id'
+

@@ -1,0 +1,118 @@
+#!/usr/bin/env zsh
+
+# If we don't have access to the OPENAI_API_KEY, try sourcing to get it. If it
+# still doesn't work, the openai server will reject the request at the gate.
+# This happens on my ubuntu machine when I run ai-vision from an OS keyboard
+# shortcut. TODO This probably is not OK on most systems, this should be removed.
+[ -z "$OPENAI_API_KEY" ] && source ~/.zshrc
+
+function ai_vision() {
+  if [[ "$OSTYPE" == "darwin"* ]] ; then
+    ai_vision_mac
+  else
+    if ! $(which yad 1>/dev/null) || ! $(which jq 1>/dev/null) ; then
+      echo 'requires `yad` and `jq`'
+      false
+      return
+    fi
+
+    ai_vision_ubuntu
+  fi
+}
+
+function ai_vision_mac() {
+  local screenshot_file="$(mktemp).png"
+  screencapture -i $screenshot_file
+
+  if [ ! -s "$screenshot_file" ]; then
+    false
+    return
+  fi
+
+  local text_input=$(osascript -e 'text returned of (display dialog "Accompanying text to send to OpenAI:" default answer "" buttons {"OK"} default button "OK" with title "AI Vision Input" with icon note)')
+
+  screenshot_url="data:image/png;base64,$(base64 -i $screenshot_file)"
+
+  local json_payload=$(jq -n --arg text "$text_input" --arg url "$screenshot_url" '{
+    "model": "gpt-4-vision-preview",
+    "messages": [{
+        "role": "user",
+        "content": [
+          { "type": "text", "text": $text },
+          { "type": "image_url", "image_url": { "url": $url }
+        }]
+      }],
+    "max_tokens": 3000
+  }')
+
+  local response=$(curl -s https://api.openai.com/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    --data "$json_payload"
+  )
+
+  echo $response
+  # TODO Likely the tr command here is not working
+  text_response=$(echo "$response" | jq -Rnr '[inputs] | join("\\n") | fromjson | .choices[0].message.content' | tr '"' '\"')
+  # Try: text_response=$(echo "$response" | jq -Rnr '[inputs] | join("\\n") | fromjson | .choices[0].message.content' | sed 's/"/\\"/g')
+  echo $text_response
+
+  # Guard for openai error response. Inform and return execution.
+  if [[ $text_response == "null" || $text_response == "" ]]; then
+    echo "$response"
+    # TODO This part is probably also not working
+    osascript -e "display dialog \"$response\" buttons {\"OK\"} default button \"OK\" with title \"Message\""
+    false
+    return
+  fi
+
+  # TODO This part is not working due to some bad escaping
+  osascript -e "display dialog \"$text_response\" buttons {\"OK\"} default button \"OK\" with title \"OpenAI Vision Response\""
+}
+
+function ai_vision_ubuntu() {
+  local screenshot_file="$(mktemp).png"
+  gnome-screenshot --area --file=$screenshot_file
+
+  if [ ! -s "$screenshot_file" ]; then
+    false
+    return
+  fi
+
+  local text_input=$(yad --entry --title="AI Vision Input" --text="Accompanying text to send to OpenAI:" --width=500 --height=200 --center)
+
+  screenshot_url="data:image/png;base64,$(base64 -w 0 $screenshot_file)"
+
+  local json_payload=$(jq -n --arg text "$text_input" --arg url "$screenshot_url" '{
+    "model": "gpt-4-vision-preview",
+    "messages": [{
+        "role": "user",
+        "content": [
+          { "type": "text", "text": $text },
+          { "type": "image_url", "image_url": { "url": $url }
+        }]
+      }],
+    "max_tokens": 3000
+  }')
+
+  local response=$(curl -s https://api.openai.com/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    --data "$json_payload"
+  )
+
+  text_response=$(echo "$response" | jq -Rnr '[inputs] | join("\\n") | fromjson | .choices[0].message.content')
+
+  # Guard for openai error response. Inform and return execution.
+  if [[ $text_response == "null" || $text_response == "" ]]; then
+    echo "$response"
+    yad --text="$response" --button=gtk-ok:0 --width=500 --height=200 --center --selectable-labels
+    false
+    return
+  fi
+
+  # echo $text_response
+  yad --text="$text_response" --button=gtk-ok:0 --width=500 --height=200 --center --selectable-labels --title="OpenAI Vision Response"
+}
+
+ai_vision
