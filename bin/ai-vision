@@ -81,7 +81,7 @@ function ai_vision_ubuntu() {
 
   local text_input=$(yad --entry --title="AI Vision Input" --text="Accompanying text to send to OpenAI:" --width=500 --height=200 --center)
 
-  screenshot_url="data:image/png;base64,$(base64 -w 0 $screenshot_file)"
+  local screenshot_url="data:image/png;base64,$(base64 -w 0 $screenshot_file)"
 
   local json_payload=$(jq -n --arg text "$text_input" --arg url "$screenshot_url" '{
     "model": "gpt-4-vision-preview",
@@ -101,7 +101,7 @@ function ai_vision_ubuntu() {
     --data "$json_payload"
   )
 
-  text_response=$(echo "$response" | jq -Rnr '[inputs] | join("\\n") | fromjson | .choices[0].message.content')
+  local text_response=$(echo "$response" | jq -Rnr '[inputs] | join("\\n") | fromjson | .choices[0].message.content')
 
   # Guard for openai error response. Inform and return execution.
   if [[ $text_response == "null" || $text_response == "" ]]; then

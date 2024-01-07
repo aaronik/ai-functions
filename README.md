@@ -8,7 +8,7 @@ Works on OSX and linux environments that use gnome.
 
 | Command | Description |
 |---------|-------------|
-| `ai` | **Create bash one liners**. You tell it what you want the bash command to do, it generates one and puts it right into the command buffer for you. |
+| `ai` | **Create bash one liners**. You tell it what you want the bash command to do, it generates one and puts it right into the command buffer for you. You can also ask it things that aren't meant to be bash one liners, and it will echo the response to the terminal. |
 | `ai-vision` | **Screen grab, add text, ask vision model**. Uses OS builtins for screen grab _and_ text input/output popups. Designed to be mapped to an OS keyboard shortcut and used outside a terminal. |
 | `ai-openai-models` | **Enumerate what models your OPENAI_API_KEY has access to**. It just lists out all the openai models you currently have access to, easy peazy. |
 
@@ -43,6 +43,8 @@ source /path/to/ai-functions/ai.zsh # Source as zsh function so `print -z` works
 * `ai set up a cron job to run a script every day at midnight`
 * `lsusb | ai disconnect from all bluetooth devices`
 * `ifconfig | ai port knock my local machine`
+* `tail -20 /var/log/syslog | ai is there any unusual activity in this log?`
+* `cat /var/log/auth.log | ai are there any suspicious login attempts here?`
 
 #### others
 * `ai-vision`
@@ -54,13 +56,7 @@ You can see a video demo of the `ai()` function here: https://youtu.be/a_5-7qCuz
 
 ## TODO
 
-* I have a vision for ai. It uses functions to decide whether to supply a bash
-  function to be print -z'd or to just echos to the console. If it supplies a
-  bash function, it'll populate the next line. Call like any above, or:
-  * `tail -20 /var/log/syslog | ai detect any unusual activity`
-  * `cat /var/log/auth.log | ai detect suspicious login attempts`
-  * `ai how many cats on a scale would it take to weigh the same as a blue whale?`
-* another vision - can I supply an area for it to use for memory,  that summarizes what its learned and would
+* a vision - can I supply an area for it to use for memory,  that summarizes what its learned and would
   like to hold on to in order to better answer future requests? For each request,
   in 20 lines only, each of no more than 80 character's width, which exists between the -----'s,
   it can modify what's in the 20 80 width lines of memory any way it wants, but it can't

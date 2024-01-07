@@ -1,21 +1,20 @@
 #!/usr/bin/env zsh
 
-# Command to generate a bash command to do whatever you ask it.
-# Usage: ai fetch ip address
 # Requires OPENAI_API_KEY to be set
-# Doc'd at https://gist.github.com/Aaronik/7d5a212f33a2815408a0c9a82470c7dd
-# TODO `ai a bash function that has a nonzero exit code` consistently returns backticks
 function ai() {
-  local system_content="uname -0: $(uname -o), uname -r: $(uname -r)."
-  local text="Write a bash command to $@. Return only the command, no other text. Do not describe what it is. Do not include quotes or back ticks in the answer. I want to copy/paste exactly what you return and run it directly in a terminal."
+  # Ensure deps are installed
+  if ! $(which curl 1>/dev/null) || ! $(which jq 1>/dev/null) ; then
+    echo 'requires `curl` and `jq`'
+    false
+    return
+  fi
+
+  local system_content="The system - uname -0: $(uname -o), uname -r: $(uname -r)."
+  local text="The user has input: '$@'. If they are describing a shell command, call the supplied printz function, NOT including newlines or escape characters, and NOT including any explanation of the command. If the user asked for text, then call the echo command with your response. Only respond in valid json."
 
   # Append piped in content
   if ! [ -t 0 ]; then
-    # If data is being piped in, read it
     piped=$(cat -)
-  fi
-
-  if [ -n "$piped" ] && [ "$piped" != '""' ]; then
     text="$text Here is further context for this request: $piped"
   fi
 
@@ -24,6 +23,42 @@ function ai() {
     "messages": [
       {"role": "system", "content": $system_content},
       {"role": "user", "content": $text}
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "printz",
+          "description": "Write a bash one liner to the command buffer",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "command": {
+                "type": "string",
+                "description": "The bash one liner that will be sent to the command buffer."
+              }
+            },
+            "required": ["command"]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "echo",
+          "description": "echo the response to the terminal",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "str": {
+                "type": "string",
+                "description": "The string that will be echoed to the terminal"
+              }
+            },
+            "required": ["str"]
+          }
+        }
+      }
     ],
     "max_tokens": 303,
     "temperature": 0,
@@ -37,14 +72,31 @@ function ai() {
     https://api.openai.com/v1/chat/completions
   )
 
-  local completion=$(echo "$response" | jq -r '.choices[0].message.content')
+  # Filter out control characters
+  response=$(echo "$response" | tr -d '\000-\037')
+
+  # Which fn the model chose
+  local function_name=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.name')
+
+  # What will be fed to the fn
+  local arg=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.arguments' | jq -r '.str // .command')
+
 
   # Guard for openai error response. Inform and return execution.
-  if [[ $completion == "null" || $completion == "" ]]; then
+  if [ -z "$function_name" -o "$cmd" == "null" ] && [ -z "$arg" -o "$arg" == "null" ]; then
+    echo
+    echo "ERROR"
+    echo "response:"
     echo "$response"
+    echo "function_name: $function_name"
+    echo "arg: $arg"
     false
     return
   fi
 
-  print -z "$completion"
+  if [ "$function_name" == "printz" ]; then
+    print -z "$arg"
+  elif [ "$function_name" == "echo" ]; then
+    echo "$arg"
+  fi
 }
