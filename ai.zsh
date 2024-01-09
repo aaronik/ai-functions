@@ -7,7 +7,7 @@ function ai() {
   fi
 
   # Bash commands need to be valid for the system they're run on
-  local system_content="This system - uname -0: $(uname -o), uname -r: $(uname -r)."
+  local system_content="This system - uname -s: $(uname -s), uname -r: $(uname -r)."
 
   # Prompt
   local prompt="""
@@ -119,7 +119,7 @@ For all requests, ONLY RESPOND IN VALID JSON.
   local function_name=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.name')
 
   # Guard for openai error response. Inform and return execution.
-  if [ -z "$function_name" -o "$cmd" == "null" ] && [ -z "$arg" -o "$arg" == "null" ]; then
+  if [ -z "$function_name" -o "$cmd" = "null" ] && [ -z "$arg" -o "$arg" = "null" ]; then
     echo
     echo "ERROR"
     echo "response:"
@@ -131,13 +131,13 @@ For all requests, ONLY RESPOND IN VALID JSON.
   fi
 
   # Perform the action
-  if [ "$function_name" == "printz" ]; then
+  if [ "$function_name" = "printz" ]; then
     local arg=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.arguments' | jq -r '.command')
     print -z "$arg"
-  elif [ "$function_name" == "echo" ]; then
+  elif [ "$function_name" = "echo" ]; then
     local arg=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.arguments' | jq -r '.str')
     echo "$arg"
-  elif [ "$function_name" == "gen_image" ]; then
+  elif [ "$function_name" = "gen_image" ]; then
     local json=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
     # For some reason the model often includes invalid \" before and after { and }
     json=$(echo $json | sed 's/\"{/{/g' | sed 's/}\"/}/g' | jq -r '.json')
