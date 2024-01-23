@@ -8,7 +8,7 @@ Works on OSX and linux environments that use gnome.
 
 | Command | Description |
 |---------|-------------|
-| `ai` | **General Purpose AI based shell command**. You can ask it to create a shell command, and it'll put it directly into the command buffer. You can ask it for information or to analyze piped in content, and it'll echo it to the terminal. You can ask it to generate images, and it'll generate one and give you a url. |
+| `ai` | **General Purpose AI based shell command**. You can ask it to create a shell command, and it'll put it directly into the command buffer. You can ask it for information or to analyze piped in content, and it'll echo it to the terminal. You can ask it to generate images, and it'll generate one and give you a url. You can ask it to say something, and it'll do text to speech on it. |
 | `ai-vision` | **Screen grab, add text, ask vision model**. Uses OS builtins for screen grab _and_ text input/output popups. Designed to be mapped to an OS keyboard shortcut and used outside a terminal. |
 | `ai-openai-models` | **Enumerate what models your OPENAI_API_KEY has access to**. It just lists out all the openai models you currently have access to, easy peazy. |
 
@@ -47,6 +47,7 @@ source /path/to/ai-functions/ai.zsh # Source as zsh function so `print -z` works
 * `cat /var/log/auth.log | ai are there any suspicious login attempts here?`
 * `ai generate a medium size image of a dog meditating on saturn`
 * `ai generate a high quality image, in a realistic style, of a computer coming to life`
+* `ai say hello there, human, in a warm, female voice`
 
 #### others
 * `ai-vision`
@@ -54,13 +55,8 @@ source /path/to/ai-functions/ai.zsh # Source as zsh function so `print -z` works
 
 ## Notes
 
-You can see a video demo of the `ai()` function here: https://youtu.be/a_5-7qCuzpw
+You can see an old video demo of the `ai()` function here: https://youtu.be/a_5-7qCuzpw
 
 ## TODO
 
-* a vision - can I supply an area for it to use for memory,  that summarizes what its learned and would
-  like to hold on to in order to better answer future requests? For each request,
-  in 20 lines only, each of no more than 80 character's width, which exists between the -----'s,
-  it can modify what's in the 20 80 width lines of memory any way it wants, but it can't
-  exceed that many lines so that the memory can best serve it to answer future questions.
 * Allow models to be swapped out

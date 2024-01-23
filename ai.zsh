@@ -4,11 +4,12 @@
 # * Test
 #   * ai list my subnet mask on 3.5 consistently borks
 #   * Set up prompt testing (good if there's no error?)
+#   * ai rename all files to include the word awesome consistently borks b/c soft quotes are included
 
 function ai() {
   # Ensure deps are installed
-  if ! $(which curl 1>/dev/null) || ! $(which jq 1>/dev/null) || [ -z "${OPENAI_API_KEY}" ] ; then
-    echo 'requires `curl` and `jq`, and the OPENAI_API_KEY env var'
+  if ! $(which curl jq mpg123 1>/dev/null) || [ -z "${OPENAI_API_KEY}" ] ; then
+    echo "$0 requires \`curl\`, \`jq\`, and \`mpg123\` for audio output, and the OPENAI_API_KEY env var to be set"
     false
     return
   fi
@@ -41,8 +42,17 @@ function ai() {
       - prompt: What the user input, minus the parts about image quality, size, and portrait/landscape.
       - n: 1
 
-    For all requests, ONLY RESPOND IN VALID JSON.
-    For all requests, ONLY CALL A FUNCTION, do not return a regular message.
+    * text_to_speech({ json: { model: Model, input: String, voice: Voice }}) - if a user is asking you to
+      say or speak something, call this, with:
+      - model: tts-1
+      - input: The user input, minus the parts about what model and voice to use.
+      - voice: Defaulting to onyx, but using, if requested:
+        - alloy - calm, androgynous, friendly
+        - echo - factual, curt, male
+        - fable - intellectual, British, androgynous
+        - onyx - male, warm, smiling - DEFAULT
+        - nova - female, humorless, cool
+        - shimmer - female, cool
   """
 
   # Append piped in content
@@ -55,8 +65,9 @@ function ai() {
   local json_payload=$(jq -n --arg system_content "$system_content" --arg prompt "$prompt" '{
     "max_tokens": 503,
     "temperature": 0,
+    "response_format": { "type": "json_object" },
     "model": "gpt-4-1106-preview",
-    # "model": "gpt-3.5-turbo",
+    # "model": "gpt-3.5-turbo-1106",
     "messages": [
       {"role": "system", "content": $system_content},
       {"role": "user", "content": $prompt}
@@ -109,7 +120,24 @@ function ai() {
                 "description": "Valid JSON for the OpenAI image generation endpoint"
               }
             },
-            "required": ["command"]
+            "required": ["json"]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "text_to_speech",
+          "description": "Send valid text to speech JSON to the OpenAI text to speech endpoint",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "json": {
+                "type": "string",
+                "description": "Valid JSON for the OpenaAI text to speech endpoint"
+              }
+            },
+            "required": ["json"]
           }
         }
       }
@@ -124,6 +152,7 @@ function ai() {
   )
 
   # Filter out control characters (they trip up jq)
+  # TODO I think this step is getting in the way of responses with quotes.
   response=$(echo "$response" | tr -d '\000-\037')
 
   # Which fn the model chose
@@ -159,6 +188,26 @@ function ai() {
       --data "$json" | jq -r '.data[0].url')
     print -z "open '$url'"
 
+  elif [ "$function_name" = "text_to_speech" ]; then
+    local json=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
+    # For some reason the model often includes invalid \" before and after { and }
+    json=$(echo $json | sed 's/\"{/{/g' | sed 's/}\"/}/g' | jq -r '.json')
+
+    voice=$(echo $json | jq -r .voice)
+    input=$(echo $json | jq -r .input)
+
+    if [ -z "$voice" ] || [ -z "$input" ]; then
+        echo "Error: LLM returned invalid json: $json"
+    else
+        echo "Generating audio using voice: $voice and input: $input"
+    fi
+
+    curl -s https://api.openai.com/v1/audio/speech \
+      -H "Authorization: Bearer $OPENAI_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "$json" \
+      | mpg123 - 2>/dev/null
+
   else
     echo "ERROR - LLM returned error or invalid function call structure or json"
     echo "function_name: $function_name"
@@ -168,4 +217,5 @@ function ai() {
     echo "$response"
     false
   fi
+
 }
