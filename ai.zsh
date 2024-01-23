@@ -148,7 +148,8 @@ function ai() {
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     --data "$json_payload" \
-    https://api.openai.com/v1/chat/completions
+    https://api.openai.com/v1/chat/completions \
+    | jq -c .
   )
 
   # Filter out control characters (they trip up jq)
@@ -160,25 +161,49 @@ function ai() {
 
   # Perform the action
   if [ "$function_name" = "printz" ]; then
-    local arg=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.arguments' | jq -r '.command')
-    print -z "$arg"
+
+    # arg here will be a highly escaped _almost json_ string.
+    local arg=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.arguments')
+
+    # Try to process the raw string, rather than treating it like json.
+    # It's too much trouble to reliably extract it via jq. This way is, believe it or not, more reliable.
+    # This shouldn't need to be done if the control characters issue is fixed,
+    # allowing responses with quotes to come through properly.
+    local start_pos=13
+    local end_offset=2
+    local end_pos=$((${#arg}-end_offset))
+
+    cmd=$(echo $arg | cut -c${start_pos}-${end_pos})
+
+    print -z "$cmd"
 
   elif [ "$function_name" = "echo" ]; then
-    local arg=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.arguments' | jq -r '.str')
-    echo "$arg"
+    # arg here will be a highly escaped _almost json_ string.
+    local arg=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.arguments')
+
+    # Try to process the raw string, rather than treating it like json.
+    # It's too much trouble to reliably extract it via jq. This way is, believe it or not, more reliable.
+    # This shouldn't need to be done if the control characters issue is fixed,
+    # allowing responses with quotes to come through properly.
+    local start_pos=9
+    local end_offset=2
+    local end_pos=$((${#arg}-end_offset))
+
+    str=$(echo $arg | cut -c${start_pos}-${end_pos})
+
+    echo "\n$str"
 
   elif [ "$function_name" = "gen_image" ]; then
     local json=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
     # For some reason the model often includes invalid \" before and after { and }
     json=$(echo $json | sed 's/\"{/{/g' | sed 's/}\"/}/g' | jq -r '.json')
 
-    echo "generating image with details: $json"
 
     # Ask before generating image
+    echo "generating image with details: $json"
     printf "continue? Y/n "
     read choice
     if [ "$choice" != "Y" ] && [ "$choice" != "" ]; then
-      echo "choice: $choice"
       return
     fi
 
