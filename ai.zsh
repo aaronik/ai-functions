@@ -2,7 +2,6 @@
 
 # TODO
 # * Test
-#   * ai list my subnet mask on 3.5 consistently borks
 #   * Set up prompt testing (good if there's no error?)
 
 function ai() {
@@ -151,7 +150,7 @@ function ai() {
   #   -H "Authorization: Bearer $OPENAI_API_KEY" \
   #   --data "$json_payload" \
   #   https://api.openai.com/v1/chat/completions \
-  #   > ./spec/json/command_with_soft_quotes.json
+  #   > ./spec/json/command_with_escaped_hard_quotes.json
   # return
 
   local response=$(curl -s -X POST \

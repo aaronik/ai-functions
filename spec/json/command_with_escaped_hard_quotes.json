@@ -1,0 +1,33 @@
+{
+  "id": "chatcmpl-8kfYiFXPFkdm5PIh8U1as2WVULloc",
+  "object": "chat.completion",
+  "created": 1706133532,
+  "model": "gpt-4-1106-preview",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_V6AFuq8V5zpmr1FyNNOV4JAe",
+            "type": "function",
+            "function": {
+              "name": "printz",
+              "arguments": "{\"command\":\"ip addr show | grep -oP 'inet \\\\K\\\\d+.\\\\d+.\\\\d+.\\\\d+/\\\\d+'\"}"
+            }
+          }
+        ]
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 729,
+    "completion_tokens": 40,
+    "total_tokens": 769
+  },
+  "system_fingerprint": "fp_de93422283"
+}

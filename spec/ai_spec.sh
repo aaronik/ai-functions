@@ -49,7 +49,21 @@ Describe 'With known responses'
 
       When call ai 'rename all files to include the word awesome'
       The status should be success
-      Dump
+    End
+
+    It 'works with a response with escaped hard quotes'
+      Skip "this functionality does not yet work"
+      print() {
+      # shellcheck disable=SC2016
+        [ "$1" = "-z" ]
+      }
+
+      curl() {
+        cat "$JSON_DIR/command_with_escaped_hard_quotes.json"
+      }
+
+      When call ai 'list my subnet mask'
+      The status should be success
     End
   End
 
