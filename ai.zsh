@@ -168,38 +168,30 @@ function ai() {
   # Which fn the model chose
   local function_name=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.name')
 
-  # Perform the action
-  if [ "$function_name" = "printz" ]; then
-
+  # Try to process the raw string, rather than treating it like json.
+  # It's too much trouble to reliably extract it via jq. This way is, believe it or not, more reliable.
+  # This shouldn't need to be done if the control characters issue is fixed,
+  # allowing responses with quotes to come through properly.
+  function raw_extract() {
     # arg here will be a highly escaped _almost json_ string.
     local arg=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.arguments')
 
-    # Try to process the raw string, rather than treating it like json.
-    # It's too much trouble to reliably extract it via jq. This way is, believe it or not, more reliable.
-    # This shouldn't need to be done if the control characters issue is fixed,
-    # allowing responses with quotes to come through properly.
-    local start_pos=13
+    local start_pos=$1
     local end_offset=2
     local end_pos=$((${#arg}-end_offset))
 
     cmd=$(echo $arg | cut -c${start_pos}-${end_pos})
 
+    echo "$cmd"
+  }
+
+  # Perform the action
+  if [ "$function_name" = "printz" ]; then
+    cmd=$(raw_extract 13)
     print -z "$cmd"
 
   elif [ "$function_name" = "echo" ]; then
-    # arg here will be a highly escaped _almost json_ string.
-    local arg=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.arguments')
-
-    # Try to process the raw string, rather than treating it like json.
-    # It's too much trouble to reliably extract it via jq. This way is, believe it or not, more reliable.
-    # This shouldn't need to be done if the control characters issue is fixed,
-    # allowing responses with quotes to come through properly.
-    local start_pos=9
-    local end_offset=2
-    local end_pos=$((${#arg}-end_offset))
-
-    str=$(echo $arg | cut -c${start_pos}-${end_pos})
-
+    str=$(raw_extract 9)
     echo "\n$str"
 
   elif [ "$function_name" = "gen_image" ]; then
