@@ -22,18 +22,35 @@ End
 Describe 'With known responses'
   Include ./ai.zsh
 
-  It 'populates the cli'
-    # if print is called without -z or with the wrong command, this errors and the test fails
-    print() {
-      [ "$1" = "-z" ] && [ "$2" = "netstat -tuln" ]
-    }
+  Describe 'populating the command buffer (printz)'
+    It 'works with a basic response'
+      # if print is called without -z or with the wrong command, this errors and the test fails
+      print() {
+        [ "$1" = "-z" ] && [ "$2" = "netstat -tuln" ]
+      }
 
-    curl() {
-      cat "$JSON_DIR/basic_command.json"
-    }
+      curl() {
+        cat "$JSON_DIR/basic_command.json"
+      }
 
-    When call ai list all open ports
-    The status should be success
+      When call ai 'list all open ports'
+      The status should be success
+    End
+
+    It 'works with a response with soft quotes'
+      print() {
+      # shellcheck disable=SC2016
+        [ "$1" = "-z" ] && [ "$2" = 'for file in *; do mv -- "${file}" "awesome_${file}"; done' ]
+      }
+
+      curl() {
+        cat "$JSON_DIR/command_with_soft_quotes.json"
+      }
+
+      When call ai 'rename all files to include the word awesome'
+      The status should be success
+      Dump
+    End
   End
 
   It 'echoes'

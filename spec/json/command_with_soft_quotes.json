@@ -1,0 +1,33 @@
+{
+  "id": "chatcmpl-8kfRLRxeTfteo75WAbX4OQX89VmY4",
+  "object": "chat.completion",
+  "created": 1706133075,
+  "model": "gpt-4-1106-preview",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_FQ3lbwk5fzSy7U4Tsh8AnlgF",
+            "type": "function",
+            "function": {
+              "name": "printz",
+              "arguments": "{\"command\":\"for file in *; do mv -- \\\"${file}\\\" \\\"awesome_${file}\\\"; done\"}"
+            }
+          }
+        ]
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 732,
+    "completion_tokens": 32,
+    "total_tokens": 764
+  },
+  "system_fingerprint": "fp_de93422283"
+}

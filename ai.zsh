@@ -4,7 +4,6 @@
 # * Test
 #   * ai list my subnet mask on 3.5 consistently borks
 #   * Set up prompt testing (good if there's no error?)
-#   * ai rename all files to include the word awesome consistently borks b/c soft quotes are included
 
 function ai() {
   # Ensure deps are installed
@@ -146,13 +145,13 @@ function ai() {
     ]
   }')
 
-  # For testing purposes, this can be used to populate json response files
+  # # For testing purposes, this can be used to populate json response files
   # curl -s -X POST \
   #   -H "Content-Type: application/json" \
   #   -H "Authorization: Bearer $OPENAI_API_KEY" \
   #   --data "$json_payload" \
   #   https://api.openai.com/v1/chat/completions \
-  #   > ./spec/json/text_to_speech.json
+  #   > ./spec/json/command_with_soft_quotes.json
   # return
 
   local response=$(curl -s -X POST \
