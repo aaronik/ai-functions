@@ -54,7 +54,7 @@ function ai() {
   """
 
   # Append piped in content
-  if ! [ -t 0 ]; then
+  if [ -p /dev/stdin ]; then
     piped=$(cat -)
     prompt="$prompt\n\nADDITIONAL CONTEXT: $piped"
   fi
