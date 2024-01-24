@@ -61,13 +61,15 @@ function ai() {
     prompt="$prompt\n\nADDITIONAL CONTEXT: $piped"
   fi
 
+  # model="${OPENAI_API_MODEL:-gpt-3.5-turbo-1106}"
+  model="${OPENAI_API_MODEL:-gpt-4-1106-preview}"
+
   # Construct the JSON payload
-  local json_payload=$(jq -n --arg system_content "$system_content" --arg prompt "$prompt" '{
+  local json_payload=$(jq -n --arg system_content "$system_content" --arg prompt "$prompt" --arg model "$model" '{
     "max_tokens": 503,
     "temperature": 0,
     "response_format": { "type": "json_object" },
-    "model": "gpt-4-1106-preview",
-    # "model": "gpt-3.5-turbo-1106",
+    "model": $model,
     "messages": [
       {"role": "system", "content": $system_content},
       {"role": "user", "content": $prompt}
@@ -197,7 +199,6 @@ function ai() {
     local json=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
     # For some reason the model often includes invalid \" before and after { and }
     json=$(echo $json | sed 's/\"{/{/g' | sed 's/}\"/}/g' | jq -r '.json')
-
 
     # Ask before generating image
     echo "generating image with details: $json"

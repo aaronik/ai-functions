@@ -56,7 +56,3 @@ source /path/to/ai-functions/ai.zsh # Source as zsh function so `print -z` works
 ## Notes
 
 You can see an old video demo of the `ai()` function here: https://youtu.be/a_5-7qCuzpw
-
-## TODO
-
-* Allow models to be swapped out
