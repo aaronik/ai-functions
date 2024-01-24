@@ -1,4 +1,5 @@
 # shellcheck disable=SC2317 # unreachable command when setting up mocks
+# shellcheck disable=SC2016 # lots of `` in quotes that we want literally
 
 function function_exists() {
   type "$1" >/dev/null 2>&1
@@ -16,6 +17,36 @@ Describe 'The test environment itself'
     When call type ai
     The status should be success
     The output should equal "ai is a shell function from ./ai.zsh"
+  End
+End
+
+Describe 'When being called without the requisite dependencies'
+  Include ./ai.zsh
+
+  It 'does not continue without programs'
+    which() {
+      false
+    }
+
+    When call ai "blah blah whatever"
+    The status should be failure
+    The output should include 'ai requires `curl`, `jq`, and `mpg123`'
+  End
+
+  It 'does not continue without OPENAI_API_KEY'
+    unset OPENAI_API_KEY
+
+    When call ai "blah blah whatever"
+    The status should be failure
+    The output should include 'ai requires `curl`, `jq`, and `mpg123`'
+  End
+
+  It 'does not continue with blank OPENAI_API_KEY'
+    export OPENAI_API_KEY=""
+
+    When call ai "blah blah whatever"
+    The status should be failure
+    The output should include 'ai requires `curl`, `jq`, and `mpg123`'
   End
 End
 
@@ -39,7 +70,6 @@ Describe 'With known responses'
 
     It 'works with a response with soft quotes'
       print() {
-      # shellcheck disable=SC2016
         [ "$1" = "-z" ] && [ "$2" = 'for file in *; do mv -- "${file}" "awesome_${file}"; done' ]
       }
 
@@ -54,7 +84,6 @@ Describe 'With known responses'
     It 'works with a response with escaped hard quotes'
       Skip "this functionality does not yet work"
       print() {
-      # shellcheck disable=SC2016
         [ "$1" = "-z" ]
       }
 
