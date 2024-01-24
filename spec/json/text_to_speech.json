@@ -1,0 +1,33 @@
+{
+  "id": "chatcmpl-8kfNDJWJ4mWEJMa0HgvQdpqSmvhmA",
+  "object": "chat.completion",
+  "created": 1706132819,
+  "model": "gpt-4-1106-preview",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_g0anqz9N6LbheuZrJzoiii06",
+            "type": "function",
+            "function": {
+              "name": "text_to_speech",
+              "arguments": "{\n  \"json\": {\n    \"model\": \"tts-1\",\n    \"input\": \"hello\",\n    \"voice\": \"shimmer\"\n  }\n}"
+            }
+          }
+        ]
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 731,
+    "completion_tokens": 45,
+    "total_tokens": 776
+  },
+  "system_fingerprint": "fp_de93422283"
+}

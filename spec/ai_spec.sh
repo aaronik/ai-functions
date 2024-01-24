@@ -29,7 +29,7 @@ Describe 'With known responses'
     }
 
     curl() {
-      echo '{"id":"chatcmpl-8ke56lXgPHCQa6RgrwEZHiiKspf3e","object":"chat.completion","created":1706127852,"model":"gpt-3.5-turbo-1106","choices":[{"index":0,"message":{"role":"assistant","content":null,"tool_calls":[{"id":"call_I2KCCqMN2cZkODrs7UtUTjgx","type":"function","function":{"name":"printz","arguments":"{\"command\":\"netstat -tuln\"}"}}]},"logprobs":null,"finish_reason":"tool_calls"}],"usage":{"prompt_tokens":728,"completion_tokens":19,"total_tokens":747},"system_fingerprint":"fp_aaa20cc2ba"}'
+      cat "$JSON_DIR/basic_command.json"
     }
 
     When call ai list all open ports
@@ -38,7 +38,7 @@ Describe 'With known responses'
 
   It 'echoes'
     curl() {
-      echo '{"id":"chatcmpl-8keAIrZbNUGhLsW7ONNUmIfKUkOwQ","object":"chat.completion","created":1706128174,"model":"gpt-4-1106-preview","choices":[{"index":0,"message":{"role":"assistant","content":null,"tool_calls":[{"id":"call_HlFBMZfERkgSTADCrgrYrybd","type":"function","function":{"name":"echo","arguments":"{\"str\":\"Elephants are usually gray in color.\"}"}}]},"logprobs":null,"finish_reason":"tool_calls"}],"usage":{"prompt_tokens":730,"completion_tokens":20,"total_tokens":750},"system_fingerprint":"fp_f71eafccde"}'
+      cat "$JSON_DIR/basic_echo.json"
     }
 
     When call ai "what color is an elephant usually?"
@@ -50,8 +50,7 @@ Elephants are usually gray in color."
   It 'generates images'
     curl() {
       if [[ "$*" == *"chat/completions"* ]]; then
-        echo '{"id":"chatcmpl-8keEGMO32jwb5Hd5tWpxIFsfyhIbD","object":"chat.completion","created":1706128420,"model":"gpt-4-1106-preview","choices":[{"index":0,"message":{"role":"assistant","content":null,"tool_calls":[{"id":"call_jiQkKZFpNbgrO6vWWRgNgkU2","type":"function","function":{"name":"gen_image","arguments":"{\"model\":\"dall-e-2\",\"prompt\":\"a cow\",\"n\":1,\"size\":\"1024x1024\"}"}}]},"logprobs":null,"finish_reason":"tool_calls"}],"usage":{"prompt_tokens":730,"completion_tokens":35,"total_tokens":765},"system_fingerprint":"fp_de93422283"}'
-
+        cat "$JSON_DIR/image_json.json"
       elif [[ "$*" == *"images/generations"* ]]; then
         echo '{"created":1706129930,"data":[{"url":"image.biz"}]}'
       fi
@@ -71,7 +70,7 @@ Elephants are usually gray in color."
   It 'generates text to speech'
     curl() {
       if [[ "$*" == *"chat/completions"* ]]; then
-        echo '{"id":"chatcmpl-8keoIjopsPAQt6vMWO51gvyYTWsIN","object":"chat.completion","created":1706130654,"model":"gpt-4-1106-preview","choices":[{"index":0,"message":{"role":"assistant","content":null,"tool_calls":[{"id":"call_JbBjyw9VRNyi8jpoXbN9cOdO","type":"function","function":{"name":"text_to_speech","arguments":"{  \"json\": {    \"model\": \"tts-1\",    \"input\": \"hello\",    \"voice\": \"shimmer\"  }}"}}]},"logprobs":null,"finish_reason":"tool_calls"}],"usage":{"prompt_tokens":731,"completion_tokens":45,"total_tokens":776},"system_fingerprint":"fp_de93422283"}'
+        cat "$JSON_DIR/text_to_speech.json"
 
       elif [[ "$*" == *"audio/speech"* ]]; then
         echo "mp3 file"

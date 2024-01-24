@@ -146,6 +146,15 @@ function ai() {
     ]
   }')
 
+  # For testing purposes, this can be used to populate json response files
+  # curl -s -X POST \
+  #   -H "Content-Type: application/json" \
+  #   -H "Authorization: Bearer $OPENAI_API_KEY" \
+  #   --data "$json_payload" \
+  #   https://api.openai.com/v1/chat/completions \
+  #   > ./spec/json/text_to_speech.json
+  # return
+
   local response=$(curl -s -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -157,8 +166,6 @@ function ai() {
   # Filter out control characters (they trip up jq)
   # TODO I think this step is getting in the way of responses with quotes.
   response=$(echo "$response" | tr -d '\000-\037')
-
-  # echo "$response" | xclip
 
   # Which fn the model chose
   local function_name=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.name')

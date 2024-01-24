@@ -1,0 +1,33 @@
+{
+  "id": "chatcmpl-8kfLDrjcYOTQc2F0wMXXNkLUmaZNP",
+  "object": "chat.completion",
+  "created": 1706132695,
+  "model": "gpt-4-1106-preview",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_bvf3V4Dk5fzQUPQbP9KSDAEh",
+            "type": "function",
+            "function": {
+              "name": "printz",
+              "arguments": "{\"command\":\"netstat -tuln\"}"
+            }
+          }
+        ]
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 731,
+    "completion_tokens": 19,
+    "total_tokens": 750
+  },
+  "system_fingerprint": "fp_de93422283"
+}
