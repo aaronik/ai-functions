@@ -8,7 +8,7 @@ Works on OSX and linux environments that use gnome.
 
 | Command | Description |
 |---------|-------------|
-| `ai` | **General Purpose AI based shell command**. You can ask it to create a shell command, and it'll put it directly into the command buffer. You can ask it for information or to analyze piped in content, and it'll echo it to the terminal. You can ask it to generate images, and it'll generate one and give you a url. You can ask it to say something, and it'll do text to speech on it. |
+| `ai` | **General Purpose AI CLI tool**. You can ask it to create a shell command, and it'll put it directly into the command buffer. You can ask it for information or to analyze piped in content, and it'll echo it to the terminal. You can ask it to generate images, and it'll generate one and give you a url. You can ask it to say something, and it'll do text to speech on it. |
 | `ai-vision` | **Screen grab, add text, ask vision model**. Uses OS builtins for screen grab _and_ text input/output popups. Designed to be mapped to an OS keyboard shortcut and used outside a terminal. |
 | `ai-openai-models` | **Enumerate what models your OPENAI_API_KEY has access to**. It just lists out all the openai models you currently have access to, easy peazy. |
 
