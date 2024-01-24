@@ -137,14 +137,20 @@ Elephants are usually gray in color."
       fi
     }
 
+    mpg123_called=0
     mpg123() {
       if ! grep -q "mp3 file"; then
         return 1
       fi
+      mpg123_called=1
     }
 
     When call ai 'Say hello in a warm female voice'
     The status should be success
     The output should include "Generating audio using voice: shimmer and input: hello"
+    if ! [ $mpg123_called = 1 ]; then
+      >&2 echo "mpg123 was never called"
+      false
+    fi
   End
 End
