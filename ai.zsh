@@ -158,6 +158,8 @@ function ai() {
   # TODO I think this step is getting in the way of responses with quotes.
   response=$(echo "$response" | tr -d '\000-\037')
 
+  # echo "$response" | xclip
+
   # Which fn the model chose
   local function_name=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.name')
 
@@ -197,8 +199,6 @@ function ai() {
 
   elif [ "$function_name" = "gen_image" ]; then
     local json=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
-    # For some reason the model often includes invalid \" before and after { and }
-    json=$(echo $json | sed 's/\"{/{/g' | sed 's/}\"/}/g' | jq -r '.json')
 
     # Ask before generating image
     echo "generating image with details: $json"
@@ -208,10 +208,15 @@ function ai() {
       return
     fi
 
-    local url=$(curl -s https://api.openai.com/v1/images/generations \
+    local resp=$(curl -s https://api.openai.com/v1/images/generations \
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer $OPENAI_API_KEY" \
-      --data "$json" | jq -r '.data[0].url')
+      --data "$json" \
+      | jq -c .
+    )
+
+    local url=$(echo $resp | jq -r '.data[0].url')
+
     print -z "open '$url'"
 
   elif [ "$function_name" = "text_to_speech" ]; then
