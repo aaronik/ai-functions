@@ -182,7 +182,7 @@ Elephants are usually gray in color."
 
     When call ai 'Say hello in a warm female voice'
     The status should be success
-    The output should include "Generating audio using voice: shimmer and input: hello"
+    The output should include "Generating audio using voice: onyx and input: hello"
     if ! [ $mpg123_called = 1 ]; then
       >&2 echo "mpg123 was never called"
       false

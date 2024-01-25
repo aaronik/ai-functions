@@ -18,39 +18,6 @@ function ai() {
   # Prompt
   local prompt="""
     USER INPUT: '$@'
-
-    COMMANDS:
-
-    * printz(command: string) - DEFAULT - use this when the user is describing a shell command.
-    However, NEVER call printz with an echo command.
-    ex: printz(ifconfig | grep -oP \'inet addr:\K\d+.\d+.\d+.\d+\')
-
-    * echo(str: string) - use this if the user asked for something that can be best answered with text.
-    Use this if you're supplying information to the user, and it doesn't need to be run as a command.
-    ex: echo('There are 4 quarts in a gallon')
-
-    * gen_image({ model: String, prompt: String, n: 1, size: SizeString }) - use this only if the user
-    is explicitly requesting an image, like 'make an image of something or other'. Do not use this
-    just because the user mentioned something that could be in an image.
-      - model: If the user requests the image to be high quality, use dall-e-3, otherwise dall-e-2.
-      - size: default to 1024x1024, unless the user specifies they want a specific size. If they do,
-        follow this guide:
-          dall-e-2 supports sizes: 256x256 (small), 512x512 (medium), or 1024x1024 (default/large).
-          dall-e-3 supports sizes: 1024x1024 (default), 1024x1792 (portrait) or 1792x1024 (landscape).
-      - prompt: What the user input, minus the parts about image quality, size, and portrait/landscape.
-      - n: 1
-
-    * text_to_speech({ json: { model: Model, input: String, voice: Voice }}) - if a user is asking you to
-      say or speak something, call this, with:
-      - model: tts-1
-      - input: The user input, minus the parts about what model and voice to use.
-      - voice: Defaulting to onyx, but using, if requested:
-        - alloy - calm, androgynous, friendly
-        - echo - factual, curt, male
-        - fable - intellectual, British, androgynous
-        - onyx - male, warm, smiling - DEFAULT
-        - nova - female, humorless, cool
-        - shimmer - female, cool
   """
 
   # Append piped in content
@@ -64,86 +31,140 @@ function ai() {
   model="${OPENAI_API_MODEL:-gpt-4-1106-preview}"
 
   # Construct the JSON payload
-  local json_payload=$(jq -n --arg system_content "$system_content" --arg prompt "$prompt" --arg model "$model" '{
-    "max_tokens": 703,
-    "temperature": 0,
-    "response_format": { "type": "json_object" },
-    "model": $model,
-    "messages": [
-      {"role": "system", "content": $system_content},
-      {"role": "user", "content": $prompt}
-    ],
-    "tools": [
-      {
-        "type": "function",
-        "function": {
-          "name": "printz",
-          "description": "Write a bash one liner to the command buffer",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "command": {
-                "type": "string",
-                "description": "The bash one liner that will be sent to the command buffer."
-              }
-            },
-            "required": ["command"]
+  local json_payload=$(jq -n \
+    --arg system_content "$system_content" \
+    --arg prompt "$prompt" \
+    --arg model "$model" \
+    --arg printz_description "$printz_description" \
+      '{
+      "max_tokens": 703,
+      "temperature": 0,
+      "model": $model,
+      "messages": [
+        {"role": "system", "content": $system_content},
+        {"role": "user", "content": $prompt}
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "printz",
+            "description": "printz(command: string) - DEFAULT - use this when the user is describing a shell command that isnt just echoing information. ex: printz(netstat -u), printz(lsof -n). Use the system content to ensure the command works on the current system. instead of printz(echo information), use the supplied echo function",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "command": {
+                  "type": "string",
+                  "description": "The bash command"
+                }
+              },
+              "required": ["command"]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "echo",
+            "description": "echo(str: string) - use this if the user asked for information other than a bash command, or anything conversational. ex echo(There are 4 quarts in a gallon), echo(There have been 46 US presidents)",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "str": {
+                  "type": "string",
+                  "description": "The information"
+                }
+              },
+              "required": ["str"]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "gen_image",
+            "description": "use this only if the user is explicitly requesting an image, like \"make an image of something or other\". Do not use this just because the user mentioned something that could be in an image",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "n": {
+                  "type": "integer",
+                  "description": "1"
+                },
+                "model": {
+                  "type": "string",
+                  "description": "Default to dall-e-2. If the user has requested a high quality image, then dall-e-3"
+                },
+                "size": {
+                  "type": "string",
+                  "description": "default to 1024x1024 unless the user specifies they want a specific size. If they do, follow this guide:
+                    dall-e-2 supports sizes: 256x256 (small), 512x512 (medium), or 1024x1024 (default/large).
+                    dall-e-3 supports sizes: 1024x1024 (default), 1024x1792 (portrait) or 1792x1024 (landscape)."
+                },
+                "prompt": {
+                  "type": "string",
+                  "description": "What the user input, minus the parts about image quality, size, and portrait/landscape"
+                }
+              },
+              "required": ["model", "size", "n", "prompt"]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "crawl_web",
+            "description": "crawl_web({ url: string, purpose: string }) - call this only if the user has explicitly requested to crawl the web, and supplied a URL to crawl.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "description": "The url the user has requested to be crawled"
+                },
+                "purpose": {
+                  "type": "string",
+                  "description": "The requested outcome of crawling the web"
+                }
+              },
+              "required": ["url", "purpose"]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "text_to_speech",
+            "description": "text_to_speech({ model: model, input: string, voice: voice }) - call this only if a user is explicitly asking you to say or speak something",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "model": {
+                  "type": "string",
+                  "description": "tts-1"
+                },
+                "input": {
+                  "type": "string",
+                  "description": "The user input, minus the parts about what model and voice to use."
+                },
+                "voice": {
+                  "type": "string",
+                  "description": "Default to onyx, unless there is a better match among:
+                    **alloy** - calm, androgynous, friendly.
+                    **echo** - factual, curt, male
+                    **fable** - intellectual, British, androgynous
+                    **onyx** - male, warm, smiling
+                    **nova** - female, humorless, cool
+                    **shimmer** - female, cool"
+                }
+              },
+              "required": ["model", "input", "voice"]
+            }
           }
         }
-      },
-      {
-        "type": "function",
-        "function": {
-          "name": "echo",
-          "description": "echo the response to the terminal",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "str": {
-                "type": "string",
-                "description": "The string that will be echoed to the terminal"
-              }
-            },
-            "required": ["str"]
-          }
-        }
-      },
-      {
-        "type": "function",
-        "function": {
-          "name": "gen_image",
-          "description": "Send JSON to OpenAI image generation endpoint",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "json": {
-                "type": "string",
-                "description": "Valid JSON for the OpenAI image generation endpoint"
-              }
-            },
-            "required": ["json"]
-          }
-        }
-      },
-      {
-        "type": "function",
-        "function": {
-          "name": "text_to_speech",
-          "description": "Send valid text to speech JSON to the OpenAI text to speech endpoint",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "json": {
-                "type": "string",
-                "description": "Valid JSON for the OpenaAI text to speech endpoint"
-              }
-            },
-            "required": ["json"]
-          }
-        }
-      }
-    ]
-  }')
+      ]
+    }'
+  )
 
   # # For testing purposes, this can be used to populate json response files
   # curl -s -X POST \
@@ -151,7 +172,7 @@ function ai() {
   #   -H "Authorization: Bearer $OPENAI_API_KEY" \
   #   --data "$json_payload" \
   #   https://api.openai.com/v1/chat/completions \
-  #   > ./spec/json/command_with_escaped_hard_quotes.json
+  #   > ./spec/json/text_to_speech.json
   # return
 
   local response=$(curl -s -X POST \
@@ -217,12 +238,19 @@ function ai() {
 
     print -z "open '$url'"
 
+  elif [ "$function_name" = "crawl_web" ]; then
+    local args=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
+
+    local url=$(echo $args | jq -r '.url')
+    local purpose=$(echo $args | jq -r '.purpose')
+
+    echo "$args $url $purpose"
+
   elif [ "$function_name" = "text_to_speech" ]; then
     local args=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
-    json=$(echo $args | jq -r '.json')
 
-    voice=$(echo $json | jq -r .voice)
-    input=$(echo $json | jq -r .input)
+    voice=$(echo $args | jq -r .voice)
+    input=$(echo $args | jq -r .input)
 
     if [ -z "$voice" ] || [ -z "$input" ]; then
         echo "Error: LLM returned invalid json: $args"
@@ -233,7 +261,7 @@ function ai() {
     curl -s https://api.openai.com/v1/audio/speech \
       -H "Authorization: Bearer $OPENAI_API_KEY" \
       -H "Content-Type: application/json" \
-      -d "$json" \
+      -d "$args" \
       | mpg123 - 2>/dev/null
 
   else

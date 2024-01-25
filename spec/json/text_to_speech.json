@@ -1,7 +1,7 @@
 {
-  "id": "chatcmpl-8kfNDJWJ4mWEJMa0HgvQdpqSmvhmA",
+  "id": "chatcmpl-8kkMzAszTaA3zA9yqBASW3ess3Zdw",
   "object": "chat.completion",
-  "created": 1706132819,
+  "created": 1706152025,
   "model": "gpt-4-1106-preview",
   "choices": [
     {
@@ -11,11 +11,11 @@
         "content": null,
         "tool_calls": [
           {
-            "id": "call_g0anqz9N6LbheuZrJzoiii06",
+            "id": "call_FeKM2rsuS2n5Gm83z4MSCleJ",
             "type": "function",
             "function": {
               "name": "text_to_speech",
-              "arguments": "{\n  \"json\": {\n    \"model\": \"tts-1\",\n    \"input\": \"hello\",\n    \"voice\": \"shimmer\"\n  }\n}"
+              "arguments": "{\"model\":\"tts-1\",\"input\":\"hello\",\"voice\":\"onyx\"}"
             }
           }
         ]
@@ -25,9 +25,9 @@
     }
   ],
   "usage": {
-    "prompt_tokens": 731,
-    "completion_tokens": 45,
-    "total_tokens": 776
+    "prompt_tokens": 669,
+    "completion_tokens": 28,
+    "total_tokens": 697
   },
-  "system_fingerprint": "fp_de93422283"
+  "system_fingerprint": "fp_3de4f27bba"
 }
