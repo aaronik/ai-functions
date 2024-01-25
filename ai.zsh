@@ -218,16 +218,14 @@ function ai() {
     print -z "open '$url'"
 
   elif [ "$function_name" = "text_to_speech" ]; then
-    local json=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
-    echo $json
-    # For some reason the model often includes invalid \" before and after { and }
-    json=$(echo $json | sed 's/\"{/{/g' | sed 's/}\"/}/g' | jq -r '.json')
+    local args=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
+    json=$(echo $args | jq -r '.json')
 
     voice=$(echo $json | jq -r .voice)
     input=$(echo $json | jq -r .input)
 
     if [ -z "$voice" ] || [ -z "$input" ]; then
-        echo "Error: LLM returned invalid json: $json"
+        echo "Error: LLM returned invalid json: $args"
     else
         echo "Generating audio using voice: $voice and input: $input"
     fi
