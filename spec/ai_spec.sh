@@ -1,6 +1,8 @@
 # shellcheck disable=SC2317 # unreachable command when setting up mocks
 # shellcheck disable=SC2016 # lots of `` in quotes that we want literally
 
+Include ./ai.zsh
+
 function function_exists() {
   type "$1" >/dev/null 2>&1
 }
@@ -11,8 +13,6 @@ Describe 'The test environment itself'
     The output should eq "gpt-3.5-turbo-1106"
   End
 
-  Include ./ai.zsh
-
   It 'has ai available to call'
     When call type ai
     The status should be success
@@ -21,8 +21,6 @@ Describe 'The test environment itself'
 End
 
 Describe 'When being called without the requisite dependencies'
-  Include ./ai.zsh
-
   It 'does not continue without programs'
     which() {
       false
@@ -50,9 +48,21 @@ Describe 'When being called without the requisite dependencies'
   End
 End
 
-Describe 'With known responses'
-  Include ./ai.zsh
+Describe 'When data is piped in'
+  Skip "This is difficult to test while also testing the \`read\` builtin"
+  It 'includes the piped in data in the request'
+    curl() {
+      [[ "$*" == *"blabblemuffin"* ]]
+    }
 
+    Data "blabblemuffin"
+
+    When call ai "what word came in"
+    The status should be failure
+  End
+End
+
+Describe 'With known responses'
   Describe 'populating the command buffer (printz)'
     It 'works with a basic response'
       # if print is called without -z or with the wrong command, this errors and the test fails
@@ -127,6 +137,7 @@ Elephants are usually gray in color."
     When call ai "Generate an image of a cow"
     The status should be success
     The output should include '{"model":"dall-e-2","prompt":"a cow","n":1,"size":"1024x1024"}'
+    The output should not include 'json'
 
     if ! [ $print_called = 1 ]; then
       >&2 echo "print -z was never called during the image generation"

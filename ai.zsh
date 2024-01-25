@@ -29,7 +29,7 @@ function ai() {
     Use this if you're supplying information to the user, and it doesn't need to be run as a command.
     ex: echo('There are 4 quarts in a gallon')
 
-    * gen_image({ json: { model: String, prompt: String, n: 1, size: SizeString }}) - use this only if the user
+    * gen_image({ model: String, prompt: String, n: 1, size: SizeString }) - use this only if the user
     is explicitly requesting an image, like 'make an image of something or other'. Do not use this
     just because the user mentioned something that could be in an image.
       - model: If the user requests the image to be high quality, use dall-e-3, otherwise dall-e-2.
@@ -54,6 +54,7 @@ function ai() {
   """
 
   # Append piped in content
+  # if ! [ -t 0 ]; then # commented b/c of difficulty in using `read` with tests using this way
   if [ -p /dev/stdin ]; then
     piped=$(cat -)
     prompt="$prompt\n\nADDITIONAL CONTEXT: $piped"
@@ -64,7 +65,7 @@ function ai() {
 
   # Construct the JSON payload
   local json_payload=$(jq -n --arg system_content "$system_content" --arg prompt "$prompt" --arg model "$model" '{
-    "max_tokens": 503,
+    "max_tokens": 703,
     "temperature": 0,
     "response_format": { "type": "json_object" },
     "model": $model,
@@ -218,6 +219,7 @@ function ai() {
 
   elif [ "$function_name" = "text_to_speech" ]; then
     local json=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
+    echo $json
     # For some reason the model often includes invalid \" before and after { and }
     json=$(echo $json | sed 's/\"{/{/g' | sed 's/}\"/}/g' | jq -r '.json')
 
