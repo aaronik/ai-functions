@@ -113,7 +113,7 @@ function ai() {
           "type": "function",
           "function": {
             "name": "crawl_web",
-            "description": "crawl_web({ url: string, purpose: string }) - call this only if the user has explicitly requested to crawl the web, and supplied a URL to crawl.",
+            "description": "crawl_web({ url: string, purpose: string }) - call this only if the user has explicitly requested to crawl the web, and supplied a URL to crawl. Do not call this if the user has not supplied a url.",
             "parameters": {
               "type": "object",
               "properties": {
@@ -208,20 +208,19 @@ function ai() {
 
   # Crawl the web
   # This function takes one argument: an openai json response object
-  # TODO This works alright for a single piece of information. But often the bot
-  # will call multiple functions, and there's no current way to aggregate all the info.
-  # This is cool, but could be developed a lot further.
+  # TODO This works alright for a single piece of information.
+  # But there's no current way to aggregate all the info.
+  # TODO Never visit the same page twice
   function crawl_web() {
-    local args=$(echo "$1" | jq -r '.choices[0].message.tool_calls[0].function.arguments')
+    # $1 is a tool_call
+    local args=$(echo "$1" | jq -r '.function.arguments')
 
     local url=$(echo $args | jq -r '.url')
     local original_purpose=$(echo $args | jq -r '.purpose')
     local prompt="Perform the following task: $original_purpose
-    * ONLY ONE FUNCTION CALL.
     * NEVER call crawl_web with the current page.
     * DEFAULT to fulfill_request
-    * When calling fulfill_request, do so in as few sentences as possible, but put everything
-      into a single call to fulfill_request.
+    * When calling fulfill_request, do so in as few sentences as possible.
     "
     local page=$(lynx -dump "$url")
     page="Current page: $url\n\n$page"
@@ -292,24 +291,33 @@ function ai() {
     )
 
     # echo
-    # echo $resp | jq '.'
+    # echo $resp
 
     if message=$(echo $resp | jq -r '.choices[0].message.content') && [ -n "$message" ] && ! [ "$message" = "null" ]; then
-      echo "\n$message"
+      echo
+      echo "$message"
     fi
 
-    local fn_name=$(echo "$resp" | jq -r '.choices[0].message.tool_calls[0].function.name')
+    local tool_calls=$(echo "$resp" | jq -rc '.choices[0].message.tool_calls[]')
 
-    if [ "$fn_name" = "crawl_web" ]; then
-      crawl_web "$resp"
+    # for tool_call in $tool_calls; do
+    echo $tool_calls | while read -r tool_call; do
+      local fn_name=$(echo "$tool_call" | jq -r '.function.name')
 
-    elif [ "$fn_name" = "fulfill_request" ]; then
-      echo "$resp" | jq -r '.choices[0].message.tool_calls[0].function.arguments | fromjson | .str'
+      if [ "$fn_name" = "crawl_web" ]; then
+        crawl_web "$tool_call"
 
-    else
-      echo "got a weird response: $resp"
+      elif [ "$fn_name" = "fulfill_request" ]; then
+        echo
+        echo "$tool_call" | jq -r '.function.arguments | fromjson | .str'
 
-    fi
+      else
+        echo
+        echo "got a weird response: $tool_call"
+        echo "function_name: $fn_name"
+
+      fi
+    done
 
   }
 
@@ -323,7 +331,7 @@ function ai() {
     echo "\n$str"
 
   elif [ "$function_name" = "crawl_web" ]; then
-    crawl_web "$response"
+    crawl_web "$(echo $response | jq -r '.choices[0].message.tool_calls[0]')"
 
   elif [ "$function_name" = "gen_image" ]; then
     local json=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
