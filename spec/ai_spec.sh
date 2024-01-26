@@ -28,7 +28,7 @@ Describe 'When being called without the requisite dependencies'
 
     When call ai "blah blah whatever"
     The status should be failure
-    The output should include 'ai requires `curl`, `jq`, and `mpg123`'
+    The output should include 'ai requires `curl`, `jq`, `lynx`, and `mpg123`'
   End
 
   It 'does not continue without OPENAI_API_KEY'
@@ -36,7 +36,7 @@ Describe 'When being called without the requisite dependencies'
 
     When call ai "blah blah whatever"
     The status should be failure
-    The output should include 'ai requires `curl`, `jq`, and `mpg123`'
+    The output should include 'ai requires `curl`, `jq`, `lynx`, and `mpg123`'
   End
 
   It 'does not continue with blank OPENAI_API_KEY'
@@ -44,7 +44,7 @@ Describe 'When being called without the requisite dependencies'
 
     When call ai "blah blah whatever"
     The status should be failure
-    The output should include 'ai requires `curl`, `jq`, and `mpg123`'
+    The output should include 'ai requires `curl`, `jq`, `lynx`, and `mpg123`'
   End
 End
 
@@ -187,5 +187,9 @@ Elephants are usually gray in color."
       >&2 echo "mpg123 was never called"
       false
     fi
+  End
+
+  It 'crawls the web'
+    Pending "TODO"
   End
 End

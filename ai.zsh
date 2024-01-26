@@ -6,8 +6,8 @@
 
 function ai() {
   # Ensure deps are installed
-  if ! $(which curl jq mpg123 1>/dev/null) || [ -z "${OPENAI_API_KEY}" ] ; then
-    echo "$0 requires \`curl\`, \`jq\`, and \`mpg123\` for audio output, and the OPENAI_API_KEY env var to be set"
+  if ! $(which curl jq mpg123 lynx 1>/dev/null) || [ -z "${OPENAI_API_KEY}" ] ; then
+    echo "$0 requires \`curl\`, \`jq\`, \`lynx\`, and \`mpg123\` for audio output, and the OPENAI_API_KEY env var to be set"
     false
     return
   fi
@@ -27,15 +27,14 @@ function ai() {
     prompt="$prompt\n\nADDITIONAL CONTEXT: $piped"
   fi
 
-  # model="${OPENAI_API_MODEL:-gpt-3.5-turbo-1106}"
-  model="${OPENAI_API_MODEL:-gpt-4-1106-preview}"
+  model="${OPENAI_API_MODEL:-gpt-3.5-turbo-1106}"
+  # model="${OPENAI_API_MODEL:-gpt-4-1106-preview}"
 
   # Construct the JSON payload
   local json_payload=$(jq -n \
     --arg system_content "$system_content" \
     --arg prompt "$prompt" \
     --arg model "$model" \
-    --arg printz_description "$printz_description" \
       '{
       "max_tokens": 703,
       "temperature": 0,
@@ -124,7 +123,7 @@ function ai() {
                 },
                 "purpose": {
                   "type": "string",
-                  "description": "The requested outcome of crawling the web"
+                  "description": "The requested outcome of crawling the web, repeated. Do not alter this."
                 }
               },
               "required": ["url", "purpose"]
@@ -207,6 +206,113 @@ function ai() {
     echo "$cmd"
   }
 
+  # Crawl the web
+  # This function takes one argument: an openai json response object
+  # TODO This works alright for a single piece of information. But often the bot
+  # will call multiple functions, and there's no current way to aggregate all the info.
+  # This is cool, but could be developed a lot further.
+  function crawl_web() {
+    local args=$(echo "$1" | jq -r '.choices[0].message.tool_calls[0].function.arguments')
+
+    local url=$(echo $args | jq -r '.url')
+    local original_purpose=$(echo $args | jq -r '.purpose')
+    local prompt="Perform the following task: $original_purpose
+    * ONLY ONE FUNCTION CALL.
+    * NEVER call crawl_web with the current page.
+    * DEFAULT to fulfill_request
+    * When calling fulfill_request, do so in as few sentences as possible, but put everything
+      into a single call to fulfill_request.
+    "
+    local page=$(lynx -dump "$url")
+    page="Current page: $url\n\n$page"
+
+    echo
+    echo "crawling $url to $original_purpose, standby..."
+
+    local json_payload=$(jq -n \
+      --arg model "$model" \
+      --arg prompt "$prompt" \
+      --arg page "$page" \
+      '{
+        "max_tokens": 703,
+        "temperature": 0,
+        "model": $model,
+        "messages": [
+          {"role": "user", "content": $page},
+          {"role": "user", "content": $prompt}
+        ],
+        tools: [
+          {
+            "type": "function",
+            "function": {
+              "name": "crawl_web",
+              "description": "crawl_web({ url: string, purpose: string }) - call this only if you absolutely need more information from one of the provided links to fulfill the task. NEVER CALL THIS WITH THE CURRENT PAGE",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "The link you need more information from"
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "description": "The purpose of visiting that link"
+                  }
+                },
+                "required": ["url", "purpose"]
+              }
+            }
+          },
+          {
+            "type": "function",
+            "function": {
+              "name": "fulfill_request",
+              "description": "fulfill_request({ str: string }) - DEFAULT - call this with your response to the task.",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "str": {
+                    "type": "string",
+                    "description": "Your response to the provided task"
+                  }
+                },
+                "required": ["str"]
+              }
+            }
+          }
+        ]
+      }'
+    )
+
+    local resp=$(curl -s https://api.openai.com/v1/chat/completions \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $OPENAI_API_KEY" \
+      --data "$json_payload" \
+      | jq -c .
+    )
+
+    # echo
+    # echo $resp | jq '.'
+
+    if message=$(echo $resp | jq -r '.choices[0].message.content') && [ -n "$message" ] && ! [ "$message" = "null" ]; then
+      echo "\n$message"
+    fi
+
+    local fn_name=$(echo "$resp" | jq -r '.choices[0].message.tool_calls[0].function.name')
+
+    if [ "$fn_name" = "crawl_web" ]; then
+      crawl_web "$resp"
+
+    elif [ "$fn_name" = "fulfill_request" ]; then
+      echo "$resp" | jq -r '.choices[0].message.tool_calls[0].function.arguments | fromjson | .str'
+
+    else
+      echo "got a weird response: $resp"
+
+    fi
+
+  }
+
   # Perform the action
   if [ "$function_name" = "printz" ]; then
     cmd=$(raw_extract 13)
@@ -215,6 +321,9 @@ function ai() {
   elif [ "$function_name" = "echo" ]; then
     str=$(raw_extract 9)
     echo "\n$str"
+
+  elif [ "$function_name" = "crawl_web" ]; then
+    crawl_web "$response"
 
   elif [ "$function_name" = "gen_image" ]; then
     local json=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
@@ -238,14 +347,6 @@ function ai() {
 
     print -z "open '$url'"
 
-  elif [ "$function_name" = "crawl_web" ]; then
-    local args=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
-
-    local url=$(echo $args | jq -r '.url')
-    local purpose=$(echo $args | jq -r '.purpose')
-
-    echo "$args $url $purpose"
-
   elif [ "$function_name" = "text_to_speech" ]; then
     local args=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
 
@@ -263,6 +364,9 @@ function ai() {
       -H "Content-Type: application/json" \
       -d "$args" \
       | mpg123 - 2>/dev/null
+
+  elif content=$(echo $response | jq -r '.choices[0].message.content') && [ -n "$content" ]; then
+    echo "$content"
 
   else
     echo "ERROR - LLM returned error or invalid function call structure or json"
