@@ -82,7 +82,7 @@ function ai() {
           "type": "function",
           "function": {
             "name": "gen_image",
-            "description": "use this only if the user is explicitly requesting an image, like \"make an image of something or other\". Do not use this just because the user mentioned something that could be in an image",
+            "description": "use this IF AND ONLY IF the user is EXPLICITLY requesting an image.",
             "parameters": {
               "type": "object",
               "properties": {
@@ -188,6 +188,8 @@ function ai() {
 
   # Which fn the model chose
   local function_name=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.name')
+
+  [ "$AI_PRINT_FUNCTION_NAME_RESPONSE" = "1" ] && echo "$function_name"
 
   # Try to process the raw string, rather than treating it like json.
   # It's too much trouble to reliably extract it via jq. This way is, believe it or not, more reliable.
