@@ -1,9 +1,5 @@
 #!/usr/bin/env zsh
 
-# TODO
-# * Test
-#   * Set up prompt testing (good if there's no error?)
-
 function ai() {
   # Ensure deps are installed
   if ! $(which curl jq mpg123 lynx 1>/dev/null) || [ -z "${OPENAI_API_KEY}" ] ; then
@@ -165,15 +161,6 @@ function ai() {
     }'
   )
 
-  # # For testing purposes, this can be used to populate json response files
-  # curl -s -X POST \
-  #   -H "Content-Type: application/json" \
-  #   -H "Authorization: Bearer $OPENAI_API_KEY" \
-  #   --data "$json_payload" \
-  #   https://api.openai.com/v1/chat/completions \
-  #   > ./spec/json/text_to_speech.json
-  # return
-
   local response=$(curl -s -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -291,9 +278,6 @@ function ai() {
       --data "$json_payload" \
       | jq -c .
     )
-
-    # echo
-    # echo $resp
 
     if message=$(echo $resp | jq -r '.choices[0].message.content') && [ -n "$message" ] && ! [ "$message" = "null" ]; then
       echo
