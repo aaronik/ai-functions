@@ -109,6 +109,16 @@ Describe 'crawl_web (Crawling a website for information)'
     "What percentage of the us population is from south or central america?"
   End
 
+  # We're testing the original prompt, this business below prevents the rest of the script,
+  # which can be slow and expensive.
+  curl() {
+    if [[ "$*" == *"Perform the following task:"* ]]; then
+      exit 0
+    else
+      /usr/bin/curl $*
+    fi
+  }
+
   It "calls crawl_web for: $1"
     When call ai "$1"
     The status should be success
