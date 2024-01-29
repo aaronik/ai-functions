@@ -119,7 +119,7 @@ function ai() {
                 },
                 "purpose": {
                   "type": "string",
-                  "description": "The requested outcome of crawling the web, repeated. Do not alter this."
+                  "description": "Repeat the request. Do not alter this."
                 }
               },
               "required": ["url", "purpose"]
@@ -205,28 +205,51 @@ function ai() {
     local args=$(echo "$1" | jq -r '.function.arguments')
 
     local url=$(echo $args | jq -r '.url')
+
+    local history=$2
+
+    if [ -z "$history" ]; then
+      history="$url"
+    else
+      history="$history,$url"
+    fi
+
     local original_purpose=$(echo $args | jq -r '.purpose')
-    local prompt="Perform the following task: $original_purpose
-    * NEVER call crawl_web with the current page.
-    * DEFAULT to fulfill_request
-    * When calling fulfill_request, do so in as few sentences as possible.
-    "
+    local prompt="USER REQUEST: $original_purpose"
+
+    # TODO Ask it to get the important info.
+    # Remove ads, remove special characters,
+    # Remove similar links,
     local page=$(lynx -dump "$url")
-    page="Current page: $url\n\n$page"
+    page_prompt="""
+    CURRENT URL: $url
+
+    HISTORY OF VISITED URLS:
+
+    $history
+
+    PAGE:
+
+    $page
+    """
 
     echo
-    echo "crawling $url to $original_purpose, standby..."
+    echo """
+    crawling: $url
+    purpose: $original_purpose
+    history: $history
+    """
 
     local json_payload=$(jq -n \
       --arg model "$model" \
       --arg prompt "$prompt" \
-      --arg page "$page" \
+      --arg page_prompt "$page_prompt" \
       '{
         "max_tokens": 703,
         "temperature": 0,
         "model": $model,
         "messages": [
-          {"role": "user", "content": $page},
+          {"role": "user", "content": $page_prompt},
           {"role": "user", "content": $prompt}
         ],
         tools: [
@@ -234,17 +257,18 @@ function ai() {
             "type": "function",
             "function": {
               "name": "crawl_web",
-              "description": "crawl_web({ url: string, purpose: string }) - call this only if you absolutely need more information from one of the provided links to fulfill the task. NEVER CALL THIS WITH THE CURRENT PAGE",
+              "description": "call this only if you absolutely need more information from one of the provided links to fulfill the task.",
               "parameters": {
                 "type": "object",
                 "properties": {
                   "url": {
                     "type": "string",
-                    "description": "The link you need more information from"
+                    "description": "The link you need more information from.
+                    DO NOT call this with CURRENT URL, or any url from HISTORY"
                   },
                   "purpose": {
                     "type": "string",
-                    "description": "The purpose of visiting that link"
+                    "description": "The reason for visiting the url. Be detailed."
                   }
                 },
                 "required": ["url", "purpose"]
@@ -254,14 +278,14 @@ function ai() {
           {
             "type": "function",
             "function": {
-              "name": "fulfill_request",
-              "description": "fulfill_request({ str: string }) - DEFAULT - call this with your response to the task.",
+              "name": "report_information",
+              "description": "DEFAULT - Report with the requested information.",
               "parameters": {
                 "type": "object",
                 "properties": {
                   "str": {
                     "type": "string",
-                    "description": "Your response to the provided task"
+                    "description": "Your response. Keep this brief."
                   }
                 },
                 "required": ["str"]
@@ -291,7 +315,7 @@ function ai() {
       local fn_name=$(echo "$tool_call" | jq -r '.function.name')
 
       if [ "$fn_name" = "crawl_web" ]; then
-        crawl_web "$tool_call"
+        crawl_web "$tool_call" "$history"
 
       elif [ "$fn_name" = "fulfill_request" ]; then
         echo
