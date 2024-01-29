@@ -8,7 +8,7 @@ Works on OSX and linux environments that use gnome.
 
 | Command | Description |
 |---------|-------------|
-| `ai` | **General Purpose AI CLI tool**. You can ask it to create a shell command, and it'll put it directly into the command buffer. You can ask it for information or to analyze piped in content, and it'll echo it to the terminal. You can ask it to generate images, and it'll generate one and give you a url. You can ask it to say something, and it'll do text to speech on it. |
+| `ai` | **General Purpose AI CLI tool**. You can ask it to create a shell command, and it'll put it directly into the command buffer. You can ask it for information or to analyze piped in content, and it'll echo it to the terminal. You can ask it to generate images, and it'll generate one and give you a url. You can ask it to say something, and it'll do text to speech on it. You can ask it to crawl the web for information. |
 | `ai-vision` | **Screen grab, add text, ask vision model**. Uses OS builtins for screen grab _and_ text input/output popups. Designed to be mapped to an OS keyboard shortcut and used outside a terminal. |
 | `ai-openai-models` | **Enumerate what models your OPENAI_API_KEY has access to**. It just lists out all the openai models you currently have access to, easy peazy. |
 
@@ -48,10 +48,15 @@ source /path/to/ai-functions/ai.zsh # Source as zsh function so `print -z` works
 * `ai generate a medium size image of a dog meditating on saturn`
 * `ai generate a high quality image, in a realistic style, of a computer coming to life`
 * `ai say hello there, human, in a warm, female voice`
+* `summarize the headlines from today`
 
 #### others
 * `ai-vision`
 * `ai-openai-models`
+
+### Tweaks
+
+You can set `OPENAI_API_MODEL` to specify what model you want, ex `OPENAI_API_MODEL=gpt-4-preview-1106 ai list all open ports`
 
 ## Notes
 

@@ -8,6 +8,22 @@ function ai() {
     return
   fi
 
+  function sanitize_json() {
+    local json="$1"
+    json=$(echo "$json" | tr -d '\000-\037' | tr -d '\177-\377' | tr -d '\n')
+    json=$(echo "$json" | jq -c .)
+
+    # Check if jq was successful
+    if [ $? -ne 0 ]; then
+      echo "ERROR - Unable to parse JSON"
+      echo $json
+      false
+      return
+    fi
+
+    echo "$json"
+  }
+
   # Bash commands need to be valid for the system they're run on
   local system_content="This system - uname -s: $(uname -s), uname -r: $(uname -r)."
 
@@ -78,7 +94,7 @@ function ai() {
           "type": "function",
           "function": {
             "name": "gen_image",
-            "description": "use this IF AND ONLY IF the user is EXPLICITLY requesting an image.",
+            "description": "use this IF AND ONLY IF the user is EXPLICITLY requesting an image, with verbiage like Make me an image or Generate an image.",
             "parameters": {
               "type": "object",
               "properties": {
@@ -109,13 +125,13 @@ function ai() {
           "type": "function",
           "function": {
             "name": "crawl_web",
-            "description": "crawl_web({ url: string, purpose: string }) - call this only if the user has explicitly requested to crawl the web, and supplied a URL to crawl. Do not call this if the user has not supplied a url.",
+            "description": "call this ONLY IF THE USER HAS EXPLICITLY REQUESTED TO CRAWL THE WEB, and supplied a URL to crawl. DO NOT CALL THIS IF THE USER HAS NOT SUPPLIED A URL, even if it will help respond accurately. Prefer echo and printz.",
             "parameters": {
               "type": "object",
               "properties": {
                 "url": {
                   "type": "string",
-                  "description": "The url the user has requested to be crawled"
+                  "description": "The url the user has explicitly supplied to be crawled"
                 },
                 "purpose": {
                   "type": "string",
@@ -165,35 +181,23 @@ function ai() {
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     --data "$json_payload" \
-    https://api.openai.com/v1/chat/completions \
-    | jq -c .
-  )
+    https://api.openai.com/v1/chat/completions)
 
-  # Filter out control characters (they trip up jq)
-  # TODO I think this step is getting in the way of responses with quotes.
-  response=$(echo "$response" | tr -d '\000-\037')
+  sanitized_response=$(sanitize_json "$response")
 
-  # Which fn the model chose
-  local function_name=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.name')
+  # Extract the function name
+  local function_name=$(echo "$sanitized_response" | jq -r '.choices[0].message.tool_calls[0].function.name')
 
+  # Check if the function name was extracted successfully
+  if [ -z "$function_name" ]; then
+    echo "ERROR - LLM returned error or invalid function call structure or json"
+    echo $response
+    false
+    return
+  fi
+
+  # Output the function name
   [ "$AI_PRINT_FUNCTION_NAME_RESPONSE" = "1" ] && echo "$function_name"
-
-  # Try to process the raw string, rather than treating it like json.
-  # It's too much trouble to reliably extract it via jq. This way is, believe it or not, more reliable.
-  # This shouldn't need to be done if the control characters issue is fixed,
-  # allowing responses with quotes to come through properly.
-  function raw_extract() {
-    # arg here will be a highly escaped _almost json_ string.
-    local arg=$(echo "$response" | jq -r '.choices[0].message.tool_calls[0].function.arguments')
-
-    local start_pos=$1
-    local end_offset=2
-    local end_pos=$((${#arg}-end_offset))
-
-    cmd=$(echo $arg | cut -c${start_pos}-${end_pos})
-
-    echo "$cmd"
-  }
 
   # Crawl the web
   # This function takes one argument: an openai json response object
@@ -264,7 +268,8 @@ function ai() {
                   "url": {
                     "type": "string",
                     "description": "The link you need more information from.
-                    DO NOT call this with CURRENT URL, or any url from HISTORY"
+                    DO NOT call this with CURRENT URL, or any url from HISTORY.
+                    If a url is in the history, do not use it again, just summarize and call report_information."
                   },
                   "purpose": {
                     "type": "string",
@@ -299,9 +304,10 @@ function ai() {
     local resp=$(curl -s https://api.openai.com/v1/chat/completions \
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer $OPENAI_API_KEY" \
-      --data "$json_payload" \
-      | jq -c .
+      --data "$json_payload"
     )
+
+    resp=$(sanitize_json "$resp")
 
     if message=$(echo $resp | jq -r '.choices[0].message.content') && [ -n "$message" ] && ! [ "$message" = "null" ]; then
       echo
@@ -333,18 +339,18 @@ function ai() {
 
   # Perform the action
   if [ "$function_name" = "printz" ]; then
-    cmd=$(raw_extract 13)
+    cmd=$(echo $sanitized_response | jq -r '.choices[0].message.tool_calls[0].function.arguments | fromjson | .command')
     print -z "$cmd"
 
   elif [ "$function_name" = "echo" ]; then
-    str=$(raw_extract 9)
+    str=$(echo $sanitized_response | jq -r '.choices[0].message.tool_calls[0].function.arguments | fromjson | .str')
     echo "\n$str"
 
   elif [ "$function_name" = "crawl_web" ]; then
-    crawl_web "$(echo $response | jq -r '.choices[0].message.tool_calls[0]')"
+    crawl_web "$(echo $sanitized_response | jq -r '.choices[0].message.tool_calls[0]')"
 
   elif [ "$function_name" = "gen_image" ]; then
-    local json=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
+    local json=$(echo $sanitized_response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
 
     # Ask before generating image
     echo "generating image with details: $json"
@@ -366,7 +372,7 @@ function ai() {
     print -z "open '$url'"
 
   elif [ "$function_name" = "text_to_speech" ]; then
-    local args=$(echo $response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
+    local args=$(echo $sanitized_response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
 
     voice=$(echo $args | jq -r .voice)
     input=$(echo $args | jq -r .input)
@@ -383,17 +389,9 @@ function ai() {
       -d "$args" \
       | mpg123 - 2>/dev/null
 
-  elif content=$(echo $response | jq -r '.choices[0].message.content') && [ -n "$content" ]; then
+  elif content=$(echo $sanitized_response | jq -r '.choices[0].message.content') && [ -n "$content" ]; then
     echo "$content"
 
-  else
-    echo "ERROR - LLM returned error or invalid function call structure or json"
-    echo "function_name: $function_name"
-    echo "arg: $arg"
-    echo
-    echo "openai response:"
-    echo "$response"
-    false
   fi
 
 }

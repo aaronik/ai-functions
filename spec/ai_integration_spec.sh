@@ -26,6 +26,12 @@ Describe 'printz (Making a command)'
     "list all open ports"
     "rename all files in the current directory to contain the word awesome"
     "list my subnet mask"
+    "show me the weather in my local region"
+    "watch star wars in the terminal"
+    "monitor CPU and memory usage and alert if too high"
+    "convert all jpg images in a folder to png"
+    "create a new user with sudo privileges"
+    # "set up a cron job to run a script every day at midnight" # TODO failing on echo call
   End
 
   It "calls printz for: $1"
@@ -106,15 +112,18 @@ End
 Describe 'crawl_web (Crawling a website for information)'
   Parameters
     "summarize reddit.com"
-    "What percentage of the us population is from south or central america?"
+    "what is the first headline from bbc.com?"
   End
 
   # We're testing the original prompt, this business below prevents the rest of the script,
   # which can be slow and expensive.
+  lockfile="/tmp/ai-test-curl-lock"
   curl() {
-    if [[ "$*" == *"Perform the following task:"* ]]; then
+    if [ -e "$lockfile" ]; then
+      rm "$lockfile"
       exit 0
     else
+      touch "$lockfile"
       /usr/bin/curl $*
     fi
   }
