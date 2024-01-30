@@ -127,40 +127,21 @@ Elephants are usually gray in color."
       fi
     }
 
-    print_called=0
-    print() {
-      print_called=1
-      [ "$1" = "-z" ] && [ "$2" = "open 'image.biz'" ]
+    open_called=0
+    open() {
+      open_called=1
+      [ "$1" = "image.biz" ]
     }
-
-    Data "Y"
 
     When call ai "Generate an image of a cow"
     The status should be success
-    The output should include '{"model":"dall-e-2","prompt":"a cow","n":1,"size":"1024x1024"}'
+    The output should include 'generating 1 image(s) using: dall-e-2, with prompt: a cow'
     The output should not include 'json'
 
-    if ! [ $print_called = 1 ]; then
-      >&2 echo "print -z was never called during the image generation"
+    if ! [ $open_called = 1 ]; then
+      >&2 echo "open was never called during the image generation"
       false
     fi
-  End
-
-  It "doesn't generate images when the user rejects the original json"
-    curl() {
-      if [[ "$*" == *"chat/completions"* ]]; then
-        cat "$JSON_DIR/image_json.json"
-      elif [[ "$*" == *"images/generations"* ]]; then
-        echo 'this will make jq choke'
-      fi
-    }
-
-    Data "n"
-
-    When call ai "Generate an image of a cow"
-    The output should include '{"model":"dall-e-2","prompt":"a cow","n":1,"size":"1024x1024"}'
-    The status should be success
-    The error should be blank
   End
 
   It 'generates text to speech'

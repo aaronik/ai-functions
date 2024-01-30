@@ -53,7 +53,8 @@ function ai() {
       "model": $model,
       "messages": [
         {"role": "system", "content": $system_content},
-        {"role": "user", "content": $prompt}
+        {"role": "user", "content": $prompt},
+        {"role": "user", "content": "only call a single function"}
       ],
       "tools": [
         {
@@ -100,7 +101,7 @@ function ai() {
               "properties": {
                 "n": {
                   "type": "integer",
-                  "description": "1"
+                  "description": "1, unless otherwise specified by user"
                 },
                 "model": {
                   "type": "string",
@@ -185,20 +186,6 @@ function ai() {
 
   sanitized_response=$(sanitize_json "$response")
 
-  # Extract the function name
-  local function_name=$(echo "$sanitized_response" | jq -r '.choices[0].message.tool_calls[0].function.name')
-
-  # Check if the function name was extracted successfully
-  if [ -z "$function_name" ]; then
-    echo "ERROR - LLM returned error or invalid function call structure or json"
-    echo $response
-    false
-    return
-  fi
-
-  # Output the function name
-  [ "$AI_PRINT_FUNCTION_NAME_RESPONSE" = "1" ] && echo "$function_name"
-
   # Crawl the web
   # This function takes one argument: an openai json response object
   # TODO This works alright for a single piece of information.
@@ -254,32 +241,33 @@ function ai() {
         "model": $model,
         "messages": [
           {"role": "user", "content": $page_prompt},
-          {"role": "user", "content": $prompt}
+          {"role": "user", "content": $prompt},
+          {"role": "user", "content": "only call a single function, and prefer report_information."}
         ],
         tools: [
-          {
-            "type": "function",
-            "function": {
-              "name": "crawl_web",
-              "description": "call this only if you absolutely need more information from one of the provided links to fulfill the task.",
-              "parameters": {
-                "type": "object",
-                "properties": {
-                  "url": {
-                    "type": "string",
-                    "description": "The link you need more information from.
-                    DO NOT call this with CURRENT URL, or any url from HISTORY.
-                    If a url is in the history, do not use it again, just summarize and call report_information."
-                  },
-                  "purpose": {
-                    "type": "string",
-                    "description": "The reason for visiting the url. Be detailed."
-                  }
-                },
-                "required": ["url", "purpose"]
-              }
-            }
-          },
+          # {
+          #   "type": "function",
+          #   "function": {
+          #     "name": "crawl_web",
+          #     "description": "call this only if you absolutely need more information from one of the provided links to fulfill the task.",
+          #     "parameters": {
+          #       "type": "object",
+          #       "properties": {
+          #         "url": {
+          #           "type": "string",
+          #           "description": "The link you need more information from.
+          #           DO NOT call this with CURRENT URL, or any url from HISTORY.
+          #           If a url is in the history, do not use it again, just summarize and call report_information."
+          #         },
+          #         "purpose": {
+          #           "type": "string",
+          #           "description": "The reason for visiting the url. Be detailed."
+          #         }
+          #       },
+          #       "required": ["url", "purpose"]
+          #     }
+          #   }
+          # },
           {
             "type": "function",
             "function": {
@@ -337,61 +325,78 @@ function ai() {
 
   }
 
-  # Perform the action
-  if [ "$function_name" = "printz" ]; then
-    cmd=$(echo $sanitized_response | jq -r '.choices[0].message.tool_calls[0].function.arguments | fromjson | .command')
-    print -z "$cmd"
+  local tool_calls=$(echo "$sanitized_response" | jq -rc '.choices[0].message.tool_calls[]')
+  echo $tool_calls | while read -r tool_call; do
+    local function_name=$(echo "$tool_call" | jq -r '.function.name')
 
-  elif [ "$function_name" = "echo" ]; then
-    str=$(echo $sanitized_response | jq -r '.choices[0].message.tool_calls[0].function.arguments | fromjson | .str')
-    echo "\n$str"
-
-  elif [ "$function_name" = "crawl_web" ]; then
-    crawl_web "$(echo $sanitized_response | jq -r '.choices[0].message.tool_calls[0]')"
-
-  elif [ "$function_name" = "gen_image" ]; then
-    local json=$(echo $sanitized_response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
-
-    # Ask before generating image
-    echo "generating image with details: $json"
-    printf "continue? Y/n "
-    read choice
-    if [ "$choice" != "Y" ] && [ "$choice" != "" ]; then
+    # Check if the function name was extracted successfully
+    if [ -z "$function_name" ]; then
+      echo "ERROR - LLM returned error or invalid function call structure or json"
+      echo $response
+      false
       return
     fi
 
-    local resp=$(curl -s https://api.openai.com/v1/images/generations \
-      -H "Content-Type: application/json" \
-      -H "Authorization: Bearer $OPENAI_API_KEY" \
-      --data "$json" \
-      | jq -c .
-    )
+    # Output the function name
+    [ "$AI_PRINT_FUNCTION_NAME_RESPONSE" = "1" ] && echo "$function_name"
 
-    local url=$(echo $resp | jq -r '.data[0].url')
 
-    print -z "open '$url'"
+    # Perform the action
+    if [ "$function_name" = "printz" ]; then
+      cmd=$(echo $tool_call | jq -r '.function.arguments | fromjson | .command')
+      print -z "$cmd"
 
-  elif [ "$function_name" = "text_to_speech" ]; then
-    local args=$(echo $sanitized_response | jq -r '.choices[0].message.tool_calls[0].function.arguments')
+    elif [ "$function_name" = "echo" ]; then
+      str=$(echo $tool_call | jq -r '.function.arguments | fromjson | .str')
+      echo "\n$str"
 
-    voice=$(echo $args | jq -r .voice)
-    input=$(echo $args | jq -r .input)
+    elif [ "$function_name" = "crawl_web" ]; then
+      crawl_web "$(echo $tool_call | jq -r '')"
 
-    if [ -z "$voice" ] || [ -z "$input" ]; then
-        echo "Error: LLM returned invalid json: $args"
-    else
-        echo "Generating audio using voice: $voice and input: $input"
+    elif [ "$function_name" = "gen_image" ]; then
+      local json=$(echo $tool_call | jq -r '.function.arguments')
+
+      local n=$(echo $json | jq -r '.n')
+      local model=$(echo $json | jq -r '.model')
+      local prompt=$(echo $json | jq -r '.prompt')
+
+      echo "generating $n image(s) using: $model, with prompt: $prompt"
+
+      local resp=$(curl -s https://api.openai.com/v1/images/generations \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $OPENAI_API_KEY" \
+        --data "$json" \
+        | jq -c .
+      )
+
+      local data=$(echo "$resp" | jq -rc '.data[]')
+      echo $data | while read -r datum; do
+        local url=$(echo $datum | jq -r '.url')
+        open "$url"
+      done
+
+    elif [ "$function_name" = "text_to_speech" ]; then
+      local args=$(echo $tool_call | jq -r '.function.arguments')
+
+      voice=$(echo $args | jq -r .voice)
+      input=$(echo $args | jq -r .input)
+
+      if [ -z "$voice" ] || [ -z "$input" ]; then
+          echo "Error: LLM returned invalid json: $args"
+      else
+          echo "Generating audio using voice: $voice and input: $input"
+      fi
+
+      curl -s https://api.openai.com/v1/audio/speech \
+        -H "Authorization: Bearer $OPENAI_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "$args" \
+        | mpg123 - 2>/dev/null
+
+    elif content=$(echo $sanitized_response | jq -r '.choices[0].message.content') && [ -n "$content" ]; then
+      echo "$content"
+
     fi
-
-    curl -s https://api.openai.com/v1/audio/speech \
-      -H "Authorization: Bearer $OPENAI_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d "$args" \
-      | mpg123 - 2>/dev/null
-
-  elif content=$(echo $sanitized_response | jq -r '.choices[0].message.content') && [ -n "$content" ]; then
-    echo "$content"
-
-  fi
+  done
 
 }
