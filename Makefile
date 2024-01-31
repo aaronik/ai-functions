@@ -1,10 +1,10 @@
 .PHONY: test test-watch
 
 test-unit:
-	shellspec --shell zsh --pattern "**/ai_spec.sh"
+	shellspec --shell zsh -F --pattern "**/ai_spec.sh"
 
 test-integration:
-	shellspec --shell zsh --pattern "**/ai_integration_spec.sh"
+	shellspec --shell zsh -F --pattern "**/ai_integration_spec.sh"
 
 test:
 	$(MAKE) test-unit
