@@ -1,0 +1,8 @@
+{
+    "error": {
+        "message": "you must provide a model parameter",
+        "type": "invalid_request_error",
+        "param": null,
+        "code": null
+    }
+}

@@ -21,6 +21,4 @@ spec_helper_loaded() {
 spec_helper_configure() {
   # Available functions: import, before_each, after_each, before_all, after_all
   : import 'support/custom_matcher'
-  export OPENAI_API_MODEL="gpt-3.5-turbo-1106"
-  export JSON_DIR="./spec/json"
 }
