@@ -41,6 +41,7 @@ function ai() {
   if ! [ "$?" = "0" ]; then
     echo "initial call to openai failure: $resp" >&2
     false
+    return
   fi
 
   # Look weird? In order to make sure we can print -z to the command buffer, we

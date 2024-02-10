@@ -56,7 +56,7 @@ func TestPrimary(t *testing.T) {
 
 		defer server.Close()
 
-		model := "gpt-3.5"
+		model := "fake-model"
 		systemContent := "definitely linux"
 
 		// Fetch, type, marshal response

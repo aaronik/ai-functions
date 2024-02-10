@@ -1,9 +1,9 @@
 {
   "What color is a lion?": {
     "error": null,
-    "id": "chatcmpl-8pUCFyeCCb1HXH2BnSDfADbLNXdvt",
+    "id": "chatcmpl-8qWx4vULKFArkTu2IL9MVPOjedqCl",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -14,7 +14,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_dL0UPrxN7e2KSSFVFdBCi7Vh",
+              "id": "call_3dwdC5LSPtVQZv18sKkniDfV",
               "type": "function",
               "function": {
                 "name": "echo",
@@ -33,9 +33,9 @@
   },
   "What color is a penguin?": {
     "error": null,
-    "id": "chatcmpl-8pUCFfd3P88hI2AA99frcdfNMUssq",
+    "id": "chatcmpl-8qWx4KHx1lwcQmIeMhY4a2FnyjzB0",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -46,7 +46,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_QUKVCMBe6UWH4DBx3cAtNIKO",
+              "id": "call_djELlrNmZnWX993zMFQ7mG4y",
               "type": "function",
               "function": {
                 "name": "echo",
@@ -65,9 +65,9 @@
   },
   "What color is an elephant?": {
     "error": null,
-    "id": "chatcmpl-8pUCFpMgEMYcv7Ncswu5g9hcFmM37",
+    "id": "chatcmpl-8qWx4kvs8UbsK1sRS54hbwHq7MG4V",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -78,7 +78,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_2MDqtH6iuRl1q5NNtrwJOlqe",
+              "id": "call_xCRsGpoBBUwdI7cRF2lYN4ez",
               "type": "function",
               "function": {
                 "name": "echo",
@@ -97,9 +97,9 @@
   },
   "convert all jpg images in a folder to png": {
     "error": null,
-    "id": "chatcmpl-8pUCFmvSMtVLbRrj0Fk7Oi4JQ2g2J",
+    "id": "chatcmpl-8qWx4MMlWV6vOJ6AcjOQW7N19oKEm",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -110,7 +110,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_Iuz3R3wxDdWcYUoHAdoTURPj",
+              "id": "call_xwnVZhsGz1Cg79ppRl3d7xp1",
               "type": "function",
               "function": {
                 "name": "printz",
@@ -129,9 +129,9 @@
   },
   "create a new user with sudo privileges": {
     "error": null,
-    "id": "chatcmpl-8pUCFctV0RknKtKOJgkDbxPDmBFrY",
+    "id": "chatcmpl-8qWx4xJsuGukOxt8aTNi25kfng5rt",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -142,11 +142,11 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_Stadu6SKU8feU3zPyIilIL8k",
+              "id": "call_WVL7VAexMvzKOEuFHUYpAX3c",
               "type": "function",
               "function": {
                 "name": "printz",
-                "arguments": "{\"command\":\"sudo adduser newuser --gecos \\\"\\\" --disabled-password\"}"
+                "arguments": "{\"command\":\"sudo adduser newuser\"}"
               }
             }
           ]
@@ -155,15 +155,15 @@
     ],
     "usage": {
       "prompt_tokens": 499,
-      "completion_tokens": 26,
-      "total_tokens": 525
+      "completion_tokens": 18,
+      "total_tokens": 517
     }
   },
   "curl command to show me the weather in my local region": {
     "error": null,
-    "id": "chatcmpl-8pUCFiIE4miZ5GPXGPgRaqoPxaM16",
+    "id": "chatcmpl-8qWx4eQhIKKju1gKBsBjimHnkVHGZ",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -174,7 +174,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_c5qe4SMteIVCJOcQy8dlmpxw",
+              "id": "call_DJqjKyUGjVOESKmKIQ3jcYWU",
               "type": "function",
               "function": {
                 "name": "printz",
@@ -191,11 +191,11 @@
       "total_tokens": 520
     }
   },
-  "generate an image of a cup of coffee": {
+  "cut a new git release called 1.0": {
     "error": null,
-    "id": "chatcmpl-8pUCF9qNWYQE6nnIF5gP6CQpowKGh",
+    "id": "chatcmpl-8qWx4WWTjOIJwYsfT2mdfv2nrJmFf",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -206,11 +206,43 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_3aLjFoPcckVFYSR3vVGvxZzV",
+              "id": "call_GsmL0PehjE7rnovdogJqSLV4",
+              "type": "function",
+              "function": {
+                "name": "printz",
+                "arguments": "{\"command\":\"git tag -a 1.0 -m \\\"Version 1.0\\\"\"}"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 502,
+      "completion_tokens": 30,
+      "total_tokens": 532
+    }
+  },
+  "generate an image of a cup of coffee": {
+    "error": null,
+    "id": "chatcmpl-8qWx483uMF5UDRP3L4kQyeGrbW3RZ",
+    "object": "chat.completion",
+    "created": 1707530414,
+    "model": "gpt-3.5-turbo-0125",
+    "choices": [
+      {
+        "index": 0,
+        "finish_reason": "tool_calls",
+        "message": {
+          "content": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "id": "call_GVrO8StH2SaT73AKmcx0JAZU",
               "type": "function",
               "function": {
                 "name": "gen_image",
-                "arguments": "{\"model\":\"dall-e-2\",\"n\":1,\"prompt\":\"a cup of coffee\",\"size\":\"1024x1024\"}"
+                "arguments": "{\"model\":\"dall-e-2\",\"n\":1,\"prompt\":\"A cup of coffee\",\"size\":\"1024x1024\"}"
               }
             }
           ]
@@ -225,9 +257,9 @@
   },
   "how many US presidents have there been": {
     "error": null,
-    "id": "chatcmpl-8pUCFDLwXbmXISUnU43nWj75UgIiF",
+    "id": "chatcmpl-8qWx4pQVTT6OCgUBISqP96OL56dZE",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -238,7 +270,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_95H6vumbtOgeSCXe5XXsMj2X",
+              "id": "call_cWKgZj9IsV6qfNKnomwJSsF9",
               "type": "function",
               "function": {
                 "name": "echo",
@@ -257,9 +289,9 @@
   },
   "how many quarts are in a gallon": {
     "error": null,
-    "id": "chatcmpl-8pUCFe5jEKEbWVp5BBhPgP6rZo5gG",
+    "id": "chatcmpl-8qWx4BkStFPkWEAk1A8lCbvZwnAxS",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -270,7 +302,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_j3SDh06NtHgm823rKF7jh5ap",
+              "id": "call_GtBKzmLFfS8o8YmAkkE3jcFa",
               "type": "function",
               "function": {
                 "name": "echo",
@@ -289,9 +321,9 @@
   },
   "list all open ports": {
     "error": null,
-    "id": "chatcmpl-8pUCFKGbcwR2ZOTcXwmoYaU9YrSyx",
+    "id": "chatcmpl-8qWx4CvuE7gGC77ya4dBx8j6oCCSq",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -302,7 +334,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_VPIqDb7VRWGammcZyALYAuo5",
+              "id": "call_w1OJtekH4co45t2pueTN6GFb",
               "type": "function",
               "function": {
                 "name": "printz",
@@ -321,9 +353,9 @@
   },
   "list all open udp ports": {
     "error": null,
-    "id": "chatcmpl-8pUCFBmQtByTMyjO9lUIFq15GUsNr",
+    "id": "chatcmpl-8qWx46lqUV5TM4tgYHES1PZF0Sm8p",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -334,7 +366,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_shn4pVDMBb57ehPEOGo0v3a7",
+              "id": "call_GsmL0PehjE7rnovdogJqSLV4",
               "type": "function",
               "function": {
                 "name": "printz",
@@ -353,9 +385,9 @@
   },
   "list my subnet mask": {
     "error": null,
-    "id": "chatcmpl-8pUCFL5NaMoaWYLHlqWFXRWMn9UuS",
+    "id": "chatcmpl-8qWx4x9Y6V64r0UNXdQjGznMVgFdO",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -366,7 +398,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_O2x3lFzvBIHHTo8eT3G58QtU",
+              "id": "call_3BYTaD79c8TQhw33CjzF7X0E",
               "type": "function",
               "function": {
                 "name": "printz",
@@ -383,34 +415,11 @@
       "total_tokens": 511
     }
   },
-  "please respond in a regular message, not using any of the supplied tools": {
+  "monitor CPU and memory usage and alert if too high": {
     "error": null,
-    "id": "chatcmpl-8pUCF4naxKQc46gA7ALtI1lDln9lQ",
+    "id": "chatcmpl-8qWx47uGlwgEEVH08JeS5gVyMDGYh",
     "object": "chat.completion",
-    "created": 1707281495,
-    "model": "gpt-3.5-turbo-0125",
-    "choices": [
-      {
-        "index": 0,
-        "finish_reason": "stop",
-        "message": {
-          "content": "Sure, I will only call a single function. Let me know which function you would like me to use.",
-          "role": "assistant",
-          "tool_calls": null
-        }
-      }
-    ],
-    "usage": {
-      "prompt_tokens": 506,
-      "completion_tokens": 23,
-      "total_tokens": 529
-    }
-  },
-  "rename all files in the current directory to contain the word awesome": {
-    "error": null,
-    "id": "chatcmpl-8pUCFSXYi372MV1xPqiDvVwfY47H8",
-    "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -421,7 +430,62 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_PzBAvXKTGgmABpf6j8ILzDyF",
+              "id": "call_w1OJtekH4co45t2pueTN6GFb",
+              "type": "function",
+              "function": {
+                "name": "printz",
+                "arguments": "{\"command\":\"top\"}"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 502,
+      "completion_tokens": 14,
+      "total_tokens": 516
+    }
+  },
+  "please respond in a regular message, not using any of the supplied tools": {
+    "error": null,
+    "id": "chatcmpl-8qWx48q9CgefcMf2NEKA6QsOFMFcx",
+    "object": "chat.completion",
+    "created": 1707530414,
+    "model": "gpt-3.5-turbo-0125",
+    "choices": [
+      {
+        "index": 0,
+        "finish_reason": "stop",
+        "message": {
+          "content": "Understood. Let me know which function you would like me to use.",
+          "role": "assistant",
+          "tool_calls": null
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 506,
+      "completion_tokens": 16,
+      "total_tokens": 522
+    }
+  },
+  "rename all files in the current directory to contain the word awesome": {
+    "error": null,
+    "id": "chatcmpl-8qWx4arvtD5Dv50Vum7AprFMcgywb",
+    "object": "chat.completion",
+    "created": 1707530414,
+    "model": "gpt-3.5-turbo-0125",
+    "choices": [
+      {
+        "index": 0,
+        "finish_reason": "tool_calls",
+        "message": {
+          "content": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "id": "call_hGXuoM7kX1S8gerhvgr4fvpp",
               "type": "function",
               "function": {
                 "name": "printz",
@@ -440,9 +504,9 @@
   },
   "set up a cron job to run a script every day at midnight": {
     "error": null,
-    "id": "chatcmpl-8pUCF4mWciSstZFto8MEkSMocPJBa",
+    "id": "chatcmpl-8qWx4QvqLQ9sy5bfAGemnSWyrpSvs",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -453,7 +517,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_LfWLmAFIunbJGPUlSxnWNqlB",
+              "id": "call_RIGM9N2v99Ee9uTfCw7437xf",
               "type": "function",
               "function": {
                 "name": "printz",
@@ -472,9 +536,9 @@
   },
   "summarize reddit.com": {
     "error": null,
-    "id": "chatcmpl-8pUCF9QfpYcEWnmSzJV2jVjniUjLp",
+    "id": "chatcmpl-8qWx4slGlhAhFdYqd5tnnH5ZlRqWC",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -485,7 +549,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_YV5Dg5tET0wXdgM7VJnL8Q86",
+              "id": "call_DwQnFxHgkNNyn4GbE1ezmYQB",
               "type": "function",
               "function": {
                 "name": "crawl_web",
@@ -504,9 +568,9 @@
   },
   "watch star wars in the terminal": {
     "error": null,
-    "id": "chatcmpl-8pUCFNKas90x8meqpQr5MOxpSPwLe",
+    "id": "chatcmpl-8qWx4XdoJWAIUvfW3jDdrI2700DSG",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -517,7 +581,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_AyHPJjBz0LmkroCplaRqHjbM",
+              "id": "call_7czK2GosL9NWbujeWogWnrMr",
               "type": "function",
               "function": {
                 "name": "printz",
@@ -536,9 +600,9 @@
   },
   "what is the first headline from bbc.com?": {
     "error": null,
-    "id": "chatcmpl-8pUCF8qBBIkIWEsy8kOvcHbEecVZP",
+    "id": "chatcmpl-8qWx4Ml4jvItDlREBmQ8VplAf5dQu",
     "object": "chat.completion",
-    "created": 1707281495,
+    "created": 1707530414,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -549,7 +613,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_ELW0UAuArdCUyk3BJoI6toQG",
+              "id": "call_hSUe7w00jeqgVbUFm7KpA32o",
               "type": "function",
               "function": {
                 "name": "crawl_web",

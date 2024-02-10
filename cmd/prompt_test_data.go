@@ -14,11 +14,11 @@ var PromptTestData = []PromptTestDatum{
 	{UserInput: "list my subnet mask", WantedFunctionName: "printz"},
 	{UserInput: "curl command to show me the weather in my local region", WantedFunctionName: "printz"},
 	{UserInput: "watch star wars in the terminal", WantedFunctionName: "printz"},
-	// {UserInput: "monitor CPU and memory usage and alert if too high", WantedFunctionName: "printz"}, // this one is 50/50 printz echo w/ 3.5 TODO
+	{UserInput: "monitor CPU and memory usage and alert if too high", WantedFunctionName: "printz"}, // this one is 50/50 printz echo w/ 3.5 TODO
 	{UserInput: "convert all jpg images in a folder to png", WantedFunctionName: "printz"},
 	{UserInput: "create a new user with sudo privileges", WantedFunctionName: "printz"},
 	{UserInput: "set up a cron job to run a script every day at midnight" , WantedFunctionName: "printz"},
-	// {UserInput: "cut a new git release called 1.0" , WantedFunctionName: "printz"}, // this is coming up echo every time
+	{UserInput: "cut a new git release called 1.0" , WantedFunctionName: "printz"},
 
 	// echo
 	{UserInput: "What color is an elephant?", WantedFunctionName: "echo"},
