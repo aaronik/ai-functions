@@ -57,7 +57,7 @@ func TestPrimary(t *testing.T) {
 		defer server.Close()
 
 		model := "fake-model"
-		systemContent := "definitely linux"
+		systemContent := "Linux art76 6.5.0-15-generic #15~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Fri Jan 12 18:54:30 UTC 2 x86_64 x86_64 x86_64 GNU/Linux"
 
 		// Fetch, type, marshal response
 		resp, err := PerformPrimaryRequest(model, userInput, systemContent, server.URL)
@@ -74,8 +74,8 @@ func TestPrimary(t *testing.T) {
 					"want: %v\n"+
 					"got: %v",
 					userInput,
-					gotFunctionName,
 					wantedFunctionName,
+					gotFunctionName,
 				)
 			}
 		} else if shouldBeMessage {

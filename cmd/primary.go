@@ -28,13 +28,13 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 				"type": "function",
 				"function": map[string]interface{}{
 					"name":        "printz",
-					"description": "use this when the user is describing a shell command that isn't just echoing information. ex: printz(netstat -u), printz(lsof -n). Use the system content to ensure the command works on the current system. instead of printz(echo information), use the supplied echo function",
+					"description": "DEFAULT - use this when the user is describing what could be supplied as a bash one liner. ex: printz(netstat -u), printz(lsof -n). Ensure command works for the supplied system. No explanations need be provided.",
 					"parameters": map[string]interface{}{
 						"type": "object",
 						"properties": map[string]interface{}{
 							"command": map[string]interface{}{
 								"type":        "string",
-								"description": "The bash command",
+								"description": "The bash one liner",
 							},
 						},
 						"required": []string{"command"},
@@ -45,13 +45,13 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 				"type": "function",
 				"function": map[string]interface{}{
 					"name":        "echo",
-					"description": "use this if the user asked for information other than a bash command, or anything conversational. ex echo(There are 4 quarts in a gallon), echo(There have been 46 US presidents)",
+					"description": "use this if the user asked for information which can not be represented as a bash one liner. ex echo(There are 4 quarts in a gallon), echo(There have been 46 US presidents). Do not call this with a bash one liner, do not provide a bash one liner with an explanation. If you have a response that's not perfect but is ok, use this.",
 					"parameters": map[string]interface{}{
 						"type": "object",
 						"properties": map[string]interface{}{
 							"str": map[string]interface{}{
 								"type":        "string",
-								"description": "The information",
+								"description": "The information. NO BASH ONE LINERS. Never call like: echo(To do such and such, use this command: <some command>)",
 							},
 						},
 						"required": []string{"str"},

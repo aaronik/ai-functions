@@ -21,7 +21,7 @@ function ai() {
   fi
 
   # Bash commands need to be valid for the system they're run on
-  local system_content="This system - uname -s: $(uname -s), uname -r: $(uname -r)."
+  local system_content="$(uname -a)"
 
   # Prompt
   local prompt="""

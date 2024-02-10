@@ -58,7 +58,7 @@ End
 # System
 Describe 'System information'
   uname() {
-    if [ "$1" = "-s" ]; then
+    if [ "$1" = "-a" ]; then
       echo "Linux"
     else
       echo "whatevs"
@@ -66,7 +66,7 @@ Describe 'System information'
   }
 
   go() {
-    if [[ "$*" =~ --system_content.*Linux ]]; then
+    if [[ "$*" =~ --system_content.*Linux.* ]]; then
       echo "echo works"
     else
       echo "error no system content"
