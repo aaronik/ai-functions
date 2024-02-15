@@ -67,7 +67,7 @@ Describe 'System information'
 
   go() {
     if [[ "$*" =~ --system_content.*Linux.* ]]; then
-      echo "echo works"
+      echo "info works"
     else
       echo "error no system content"
     fi
@@ -84,7 +84,7 @@ End
 Describe 'When data is piped in'
   go() {
     if [[ "$*" =~ "ADDITIONAL CONTEXT: additional context" ]]; then
-      echo "echo works"
+      echo "info works"
     else
       echo "error additional context not detected"
     fi
@@ -101,7 +101,7 @@ End
 Describe 'When a model is specified via OPENAI_API_MODEL'
   go() {
     if [[ "$*" =~ " --model furby " ]]; then
-      echo "echo works"
+      echo "info works"
     else
       echo "error model didnt work"
     fi
@@ -183,9 +183,9 @@ Describe 'When asked for a bash one liner'
 End
 
 # Tests echo
-Describe 'When asked for an echo'
+Describe 'When asked for an info'
   go() {
-    printf "echo works"
+    printf "info works"
   }
 
   echo() {

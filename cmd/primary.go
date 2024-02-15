@@ -44,14 +44,14 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 			{
 				"type": "function",
 				"function": map[string]interface{}{
-					"name":        "echo",
-					"description": "use this if the user asked for information which can not be represented as a bash one liner. ex echo(There are 4 quarts in a gallon), echo(There have been 46 US presidents). Do not call this with a bash one liner, do not provide a bash one liner with an explanation. If you have a response that's not perfect but is ok, use this.",
+					"name":        "info",
+					"description": "use this if the user asked for information which can not be represented as a bash one liner. ex info(There are 4 quarts in a gallon), info(There have been 46 US presidents). Do not call this with a bash one liner, do not provide a bash one liner with an explanation. If you have a response that's not perfect but is ok, use this.",
 					"parameters": map[string]interface{}{
 						"type": "object",
 						"properties": map[string]interface{}{
 							"str": map[string]interface{}{
 								"type":        "string",
-								"description": "The information. NO BASH ONE LINERS. Never call like: echo(To do such and such, use this command: <some command>)",
+								"description": "The information. NO BASH ONE LINERS. Never call like: info(To do such and such, use this command: <some command>)",
 							},
 						},
 						"required": []string{"str"},
@@ -91,7 +91,7 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 				"type": "function",
 				"function": map[string]interface{}{
 					"name":        "crawl_web",
-					"description": "call this ONLY IF THE USER HAS EXPLICITLY REQUESTED TO CRAWL THE WEB, and supplied a URL to crawl. DO NOT CALL THIS IF THE USER HAS NOT SUPPLIED A URL, even if it will help respond accurately. Prefer echo and printz.",
+					"description": "call this ONLY IF THE USER HAS EXPLICITLY REQUESTED TO CRAWL THE WEB, and supplied a URL to crawl. DO NOT CALL THIS IF THE USER HAS NOT SUPPLIED A URL, even if it will help respond accurately. Prefer info and printz.",
 					"parameters": map[string]interface{}{
 						"type": "object",
 						"properties": map[string]interface{}{
@@ -212,14 +212,14 @@ func HandlePrimaryResponse(resp OpenAICompletionResponse, w io.Writer) {
 		var commandObj Command
 		json.Unmarshal([]byte(toolCallArgs), &commandObj)
 		fmt.Fprintln(w, "printz", commandObj.Command)
-	case "echo":
+	case "info":
 		type Str struct {
 			Str string `json:"str"`
 		}
 
 		var strObj Str
 		json.Unmarshal([]byte(toolCallArgs), &strObj)
-		fmt.Fprintln(w, "echo", strObj.Str)
+		fmt.Fprintln(w, "info", strObj.Str)
 	case "crawl_web":
 		fmt.Fprintln(w, "crawl_web", toolCallArgs)
 	case "gen_image":

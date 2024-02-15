@@ -50,7 +50,7 @@ function ai() {
   # over multiple steps, to print themselves from the go app.
   if [[ $resp == printz\ * ]]; then
     print -z "${resp:7}"
-  elif [[ $resp == echo\ * ]]; then
+  elif [[ $resp == info\ * ]]; then
     echo "${resp:5}"
   elif [[ $resp == crawl_web\ * ]]; then
     (cd $app_dir; go run main.go crawl_web --model "$model" --jsonParams "${resp:10}")
