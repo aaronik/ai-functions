@@ -19,16 +19,21 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 		"temperature": 0,
 		"model":       model,
 		"messages": []map[string]interface{}{
-			{"role": "system", "content": systemContent},
+			{"role": "user", "content": "User's system: " + systemContent},
 			{"role": "user", "content": prompt},
+			{"role": "system", "content": "You are a bash one liner creation system. Your primary purpose is to create bash commands that achieve what the user is requesting, and call the printz tool with them."},
+			{"role": "system", "content": "You are allowed to return normal message format, but do so sparingly."},
+			{"role": "system", "content": "use crawl_web for information you're otherwise unable to provide. Avoid when possible."},
+			{"role": "system", "content": "use gen_image only when explicitly asked for an image."},
 			{"role": "user", "content": "only call a single function"},
+			{"role": "user", "content": "don't ask for permission to call a function"},
 		},
 		"tools": []map[string]interface{}{
 			{
 				"type": "function",
 				"function": map[string]interface{}{
 					"name":        "printz",
-					"description": "DEFAULT - use this when the user is describing what could be supplied as a bash one liner. ex: printz(netstat -u), printz(lsof -n). Ensure command works for the supplied system. No explanations need be provided.",
+					"description": "Use zsh's print -z to place the command on the command buffer. ex: printz(netstat -u), printz(lsof -n).",
 					"parameters": map[string]interface{}{
 						"type": "object",
 						"properties": map[string]interface{}{
@@ -41,23 +46,23 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 					},
 				},
 			},
-			{
-				"type": "function",
-				"function": map[string]interface{}{
-					"name":        "info",
-					"description": "use this if the user asked for information which can not be represented as a bash one liner. ex info(There are 4 quarts in a gallon), info(There have been 46 US presidents). Do not call this with a bash one liner, do not provide a bash one liner with an explanation. If you have a response that's not perfect but is ok, use this.",
-					"parameters": map[string]interface{}{
-						"type": "object",
-						"properties": map[string]interface{}{
-							"str": map[string]interface{}{
-								"type":        "string",
-								"description": "The information. NO BASH ONE LINERS. Never call like: info(To do such and such, use this command: <some command>)",
-							},
-						},
-						"required": []string{"str"},
-					},
-				},
-			},
+			// {
+			// 	"type": "function",
+			// 	"function": map[string]interface{}{
+			// 		"name":        "info",
+			// 		"description": "use this if the user asked for information which can not be represented as a bash one liner. ex info(There are 4 quarts in a gallon), info(There have been 46 US presidents). Do not call this with a bash one liner, do not provide a bash one liner with an explanation. If you have a response that's not perfect but is ok, use this.",
+			// 		"parameters": map[string]interface{}{
+			// 			"type": "object",
+			// 			"properties": map[string]interface{}{
+			// 				"str": map[string]interface{}{
+			// 					"type":        "string",
+			// 					"description": "The information. NO BASH ONE LINERS. Never call like: info(To do such and such, use this command: <some command>)",
+			// 				},
+			// 			},
+			// 			"required": []string{"str"},
+			// 		},
+			// 	},
+			// },
 			{
 				"type": "function",
 				"function": map[string]interface{}{
@@ -91,17 +96,17 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 				"type": "function",
 				"function": map[string]interface{}{
 					"name":        "crawl_web",
-					"description": "call this ONLY IF THE USER HAS EXPLICITLY REQUESTED TO CRAWL THE WEB, and supplied a URL to crawl. DO NOT CALL THIS IF THE USER HAS NOT SUPPLIED A URL, even if it will help respond accurately. Prefer info and printz.",
+					"description": "Crawl the web for more information.",
 					"parameters": map[string]interface{}{
 						"type": "object",
 						"properties": map[string]interface{}{
 							"url": map[string]interface{}{
 								"type":        "string",
-								"description": "The url the user has explicitly supplied to be crawled",
+								"description": "Fully qualified URL",
 							},
 							"purpose": map[string]interface{}{
 								"type":        "string",
-								"description": "Repeat the user input. Do not alter this.",
+								"description": "A detailed description of the user's needs.",
 							},
 						},
 						"required": []string{"url", "purpose"},

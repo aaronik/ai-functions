@@ -27,6 +27,9 @@ func buildCrawlWebRequest(carryoverJson string, model string) map[string]interfa
 	url := carryover.Url
 	purpose := carryover.Purpose
 
+	fmt.Println("crawling:", url)
+	fmt.Println("purpose:", purpose)
+
 	// Get the page content using lynx
 	// TODO This is hitting the web during unit tests
 	cmd := exec.Command("lynx", "-dump", url)
@@ -37,9 +40,6 @@ func buildCrawlWebRequest(carryoverJson string, model string) map[string]interfa
 	}
 	page := string(output)
 
-	fmt.Println("crawling:", url)
-	fmt.Println("purpose:", purpose)
-
 	Data := map[string]interface{}{
 		"max_tokens":  703,
 		"temperature": 0,
@@ -47,7 +47,7 @@ func buildCrawlWebRequest(carryoverJson string, model string) map[string]interfa
 		"messages": []map[string]interface{}{
 			{"role": "user", "content": page},
 			{"role": "user", "content": purpose},
-			{"role": "user", "content": "only call a single function"},
+			{"role": "user", "content": "only call a single tool/function once"},
 		},
 		"tools": []map[string]interface{}{
 			{
@@ -60,7 +60,7 @@ func buildCrawlWebRequest(carryoverJson string, model string) map[string]interfa
 						"properties": map[string]interface{}{
 							"str": map[string]interface{}{
 								"type":        "string",
-								"description": "Your response. Keep this brief.",
+								"description": "The information the user is looking for from the supplied web page.",
 							},
 						},
 						"required": []string{"str"},

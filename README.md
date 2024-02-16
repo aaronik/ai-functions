@@ -14,8 +14,7 @@ Works on OSX and linux environments that use gnome.
 
 ## Requirements
 
-* `OPENAI_API_KEY` environment variable set.
-  As it stands, you'll also need access to the `gpt-4` based models, which you can get by *prepaying* for the openai API at https://platform.openai.com/account/billing/overview.
+* `OPENAI_API_KEY` environment variable set (see https://platform.openai.com/account/billing/overview)
 
 ## Installation
 
@@ -35,20 +34,19 @@ source /path/to/ai-functions/ai.zsh # Source as zsh function so `print -z` works
 
 #### ai
 * `ai list all open ports`
-* `ai show me the weather in my local region`
+* `ai command to show me the weather`
 * `ai watch star wars in the terminal`
 * `ai monitor CPU and memory usage and alert if too high`
 * `ai convert all jpg images in a folder to png`
 * `ai create a new user with sudo privileges`
 * `ai set up a cron job to run a script every day at midnight`
-* `lsusb | ai disconnect from all bluetooth devices`
-* `ifconfig | ai port knock my local machine`
+* `lsusb | ai how many USB drives are plugged in`
+* `ifconfig | ai how much total outbound traffic`
 * `tail -20 /var/log/syslog | ai is there any unusual activity in this log?`
 * `cat /var/log/auth.log | ai are there any suspicious login attempts here?`
-* `ai generate a medium size image of a dog meditating on saturn`
-* `ai generate a high quality image, in a realistic style, of a computer coming to life`
-* `ai say hello there, human, in a warm, female voice`
-* `summarize the headlines from today`
+* `ai generate an image of a dog meditating on saturn`
+* `ai generate a high quality image, in a hyper realistic style, of a computer coming to life`
+* `summarize the headlines from reddit.com`
 
 #### others
 * `ai-vision`
@@ -56,7 +54,8 @@ source /path/to/ai-functions/ai.zsh # Source as zsh function so `print -z` works
 
 ### Tweaks
 
-You can set `OPENAI_API_MODEL` to specify what model you want, ex `OPENAI_API_MODEL=gpt-4-preview-1106 ai list all open ports`
+You can set `OPENAI_API_MODEL` to specify what model you want, ex `OPENAI_API_MODEL=gpt-4-turbo-preview ai list all open ports`,
+or add `export OPENAI_API_MODEL=gpt-4-turbo-preview` to your rc file.
 
 ## Notes
 

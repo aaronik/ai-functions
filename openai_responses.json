@@ -1,9 +1,9 @@
 {
   "What color is a lion?": {
     "error": null,
-    "id": "chatcmpl-8sfP86BzcSYiDOcD8WzgtalGv2Zlq",
+    "id": "chatcmpl-8t1sPfXqokWsvo7yNskw3IT8BCRtG",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -14,11 +14,11 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_0znfqXPkeADRLPwlyuAih0AQ",
+              "id": "call_DKhyILwLv24hL5PMfmxCFngP",
               "type": "function",
               "function": {
-                "name": "info",
-                "arguments": "{\"str\":\"A lion's color is typically a shade of yellow or brown, with a white underside.\"}"
+                "name": "crawl_web",
+                "arguments": "{\"purpose\":\"To find out the color of a lion\",\"url\":\"https://www.worldatlas.com/articles/what-color-is-a-lion\"}"
               }
             }
           ]
@@ -26,16 +26,16 @@
       }
     ],
     "usage": {
-      "prompt_tokens": 551,
-      "completion_tokens": 30,
-      "total_tokens": 581
+      "prompt_tokens": 523,
+      "completion_tokens": 40,
+      "total_tokens": 563
     }
   },
   "What color is a penguin?": {
     "error": null,
-    "id": "chatcmpl-8sfP8gI40VhgUR4wXYkbXvXcVPrYl",
+    "id": "chatcmpl-8t1sPNpsVnQyzrNafGcvkSbW1HGXw",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -46,11 +46,11 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_Uad808t8CwEZqRznVzUEQm11",
+              "id": "call_WisPtb0RM05RQjvMMzNqlU1M",
               "type": "function",
               "function": {
-                "name": "info",
-                "arguments": "{\"str\":\"Penguins have black and white feathers, giving them a distinctive coloration.\"}"
+                "name": "crawl_web",
+                "arguments": "{\"purpose\":\"To find out the color of a penguin\",\"url\":\"https://www.worldatlas.com/animals/birds/penguin\"}"
               }
             }
           ]
@@ -58,16 +58,16 @@
       }
     ],
     "usage": {
-      "prompt_tokens": 552,
-      "completion_tokens": 27,
-      "total_tokens": 579
+      "prompt_tokens": 524,
+      "completion_tokens": 40,
+      "total_tokens": 564
     }
   },
-  "What color is an elephant?": {
+  "command to show the weather": {
     "error": null,
-    "id": "chatcmpl-8sfP8fJpHC6VeL4dYVWGBMzbFLG3i",
+    "id": "chatcmpl-8t1sPfqkTB4m2tWGuiBakNdnd4NeJ",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -78,103 +78,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_gMqzzIMp09yNWgEgf4zlxJpm",
-              "type": "function",
-              "function": {
-                "name": "info",
-                "arguments": "{\"str\":\"An elephant is typically gray in color.\"}"
-              }
-            }
-          ]
-        }
-      }
-    ],
-    "usage": {
-      "prompt_tokens": 551,
-      "completion_tokens": 20,
-      "total_tokens": 571
-    }
-  },
-  "convert all jpg images in a folder to png": {
-    "error": null,
-    "id": "chatcmpl-8sfP8305uyS3hTpJWJ7zOq6oWXpu4",
-    "object": "chat.completion",
-    "created": 1708039562,
-    "model": "gpt-3.5-turbo-0125",
-    "choices": [
-      {
-        "index": 0,
-        "finish_reason": "tool_calls",
-        "message": {
-          "content": null,
-          "role": "assistant",
-          "tool_calls": [
-            {
-              "id": "call_8eSuJ9GfdohJpiIk6YjuqrBY",
-              "type": "function",
-              "function": {
-                "name": "printz",
-                "arguments": "{\"command\":\"for file in *.jpg; do convert $file $(basename $file .jpg).png; done\"}"
-              }
-            }
-          ]
-        }
-      }
-    ],
-    "usage": {
-      "prompt_tokens": 554,
-      "completion_tokens": 33,
-      "total_tokens": 587
-    }
-  },
-  "create a new user with sudo privileges": {
-    "error": null,
-    "id": "chatcmpl-8sfP82gjvKtmobB0VUSvG2NNeDR2w",
-    "object": "chat.completion",
-    "created": 1708039562,
-    "model": "gpt-3.5-turbo-0125",
-    "choices": [
-      {
-        "index": 0,
-        "finish_reason": "tool_calls",
-        "message": {
-          "content": null,
-          "role": "assistant",
-          "tool_calls": [
-            {
-              "id": "call_EO0q0tBuqxRo4GS1u6bW7lWz",
-              "type": "function",
-              "function": {
-                "name": "printz",
-                "arguments": "{\"command\":\"sudo adduser newuser --gecos \\\"\\\" --disabled-password \u0026\u0026 sudo usermod -aG sudo newuser\"}"
-              }
-            }
-          ]
-        }
-      }
-    ],
-    "usage": {
-      "prompt_tokens": 552,
-      "completion_tokens": 36,
-      "total_tokens": 588
-    }
-  },
-  "curl command to show me the weather in my local region": {
-    "error": null,
-    "id": "chatcmpl-8sfP8hsfCxWn3hRnGzeTa0hpIn2PD",
-    "object": "chat.completion",
-    "created": 1708039562,
-    "model": "gpt-3.5-turbo-0125",
-    "choices": [
-      {
-        "index": 0,
-        "finish_reason": "tool_calls",
-        "message": {
-          "content": null,
-          "role": "assistant",
-          "tool_calls": [
-            {
-              "id": "call_dMb7Bz1d6HKqSpOGBZ5XEEoI",
+              "id": "call_ljgm39lh6YwOTqAT8o5kjmVF",
               "type": "function",
               "function": {
                 "name": "printz",
@@ -186,16 +90,16 @@
       }
     ],
     "usage": {
-      "prompt_tokens": 556,
+      "prompt_tokens": 522,
       "completion_tokens": 17,
-      "total_tokens": 573
+      "total_tokens": 539
     }
   },
-  "cut a new git release called 1.0": {
+  "convert all jpg images in folder to png": {
     "error": null,
-    "id": "chatcmpl-8sfP80ilEMO6uG37yy9U7x8CHJV49",
+    "id": "chatcmpl-8t1sPbNqPjOnCdp9L9dNf5dhQwwsV",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -206,11 +110,11 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_uMdkRKVKNI5JudbUOeQm0n3Y",
+              "id": "call_09Gtzmp176vkAiqIYsewcn17",
               "type": "function",
               "function": {
                 "name": "printz",
-                "arguments": "{\"command\":\"git tag -a 1.0 -m 'Version 1.0'\"}"
+                "arguments": "{\"command\":\"for file in *.jpg; do convert $file ${file%.jpg}.png; done\"}"
               }
             }
           ]
@@ -218,16 +122,16 @@
       }
     ],
     "usage": {
-      "prompt_tokens": 555,
-      "completion_tokens": 30,
-      "total_tokens": 585
+      "prompt_tokens": 525,
+      "completion_tokens": 31,
+      "total_tokens": 556
     }
   },
-  "generate an image of a cup of coffee": {
+  "create a new user with sudo privileges": {
     "error": null,
-    "id": "chatcmpl-8sfP8BfpfenFoHLi07B9wZef2Y6m0",
+    "id": "chatcmpl-8t1sPadFz0A79YjNtWxRlFFH9Z579",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -238,7 +142,71 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_DOuQHgrvBgCU5DFZUdg4SeW7",
+              "id": "call_3t9up9RvAiWROSw6hw95AKeO",
+              "type": "function",
+              "function": {
+                "name": "printz",
+                "arguments": "{\"command\":\"sudo adduser newuser --gecos \\\"\\\" --disabled-password \u0026\u0026 sudo usermod -aG sudo newuser\"}"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 524,
+      "completion_tokens": 36,
+      "total_tokens": 560
+    }
+  },
+  "cut a new git release called 1.0": {
+    "error": null,
+    "id": "chatcmpl-8t1sPfPiuZWNn7gK9DnqZBCAhLsNm",
+    "object": "chat.completion",
+    "created": 1708125945,
+    "model": "gpt-3.5-turbo-0125",
+    "choices": [
+      {
+        "index": 0,
+        "finish_reason": "tool_calls",
+        "message": {
+          "content": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "id": "call_TLWlmJ0vj7VRXy579ouuSHe8",
+              "type": "function",
+              "function": {
+                "name": "printz",
+                "arguments": "{\"command\":\"git tag -a 1.0 -m 'Version 1.0 release'\"}"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 527,
+      "completion_tokens": 31,
+      "total_tokens": 558
+    }
+  },
+  "generate an image of a cup of coffee": {
+    "error": null,
+    "id": "chatcmpl-8t1sRsMSUqZFvXeabzGG9OCIHUWBT",
+    "object": "chat.completion",
+    "created": 1708125947,
+    "model": "gpt-3.5-turbo-0125",
+    "choices": [
+      {
+        "index": 0,
+        "finish_reason": "tool_calls",
+        "message": {
+          "content": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "id": "call_7wvqGJGw4vXu6Ubc1zcZY8wB",
               "type": "function",
               "function": {
                 "name": "gen_image",
@@ -250,112 +218,16 @@
       }
     ],
     "usage": {
-      "prompt_tokens": 553,
+      "prompt_tokens": 525,
       "completion_tokens": 37,
-      "total_tokens": 590
-    }
-  },
-  "how many US presidents have there been": {
-    "error": null,
-    "id": "chatcmpl-8sfP8PpzFhtp2m09kaSEgvtBbXvtz",
-    "object": "chat.completion",
-    "created": 1708039562,
-    "model": "gpt-3.5-turbo-0125",
-    "choices": [
-      {
-        "index": 0,
-        "finish_reason": "tool_calls",
-        "message": {
-          "content": null,
-          "role": "assistant",
-          "tool_calls": [
-            {
-              "id": "call_tAvQzrgRQgXjdA3rOkEakLzx",
-              "type": "function",
-              "function": {
-                "name": "info",
-                "arguments": "{\"str\":\"There have been 46 US presidents.\"}"
-              }
-            }
-          ]
-        }
-      }
-    ],
-    "usage": {
-      "prompt_tokens": 552,
-      "completion_tokens": 20,
-      "total_tokens": 572
-    }
-  },
-  "how many quarts are in a gallon": {
-    "error": null,
-    "id": "chatcmpl-8sfP8ElBZCCis8ngdmCRy6vAv8w7i",
-    "object": "chat.completion",
-    "created": 1708039562,
-    "model": "gpt-3.5-turbo-0125",
-    "choices": [
-      {
-        "index": 0,
-        "finish_reason": "tool_calls",
-        "message": {
-          "content": null,
-          "role": "assistant",
-          "tool_calls": [
-            {
-              "id": "call_DOuQHgrvBgCU5DFZUdg4SeW7",
-              "type": "function",
-              "function": {
-                "name": "info",
-                "arguments": "{\"str\":\"There are 4 quarts in a gallon.\"}"
-              }
-            }
-          ]
-        }
-      }
-    ],
-    "usage": {
-      "prompt_tokens": 553,
-      "completion_tokens": 22,
-      "total_tokens": 575
-    }
-  },
-  "list all open ports": {
-    "error": null,
-    "id": "chatcmpl-8sfP8k65NimoMZVvJTIvkXZeOXqPG",
-    "object": "chat.completion",
-    "created": 1708039562,
-    "model": "gpt-3.5-turbo-0125",
-    "choices": [
-      {
-        "index": 0,
-        "finish_reason": "tool_calls",
-        "message": {
-          "content": null,
-          "role": "assistant",
-          "tool_calls": [
-            {
-              "id": "call_1gSgCu87axMeDROJgZIVmp6N",
-              "type": "function",
-              "function": {
-                "name": "printz",
-                "arguments": "{\"command\":\"netstat -tuln\"}"
-              }
-            }
-          ]
-        }
-      }
-    ],
-    "usage": {
-      "prompt_tokens": 549,
-      "completion_tokens": 19,
-      "total_tokens": 568
+      "total_tokens": 562
     }
   },
   "list all open udp ports": {
     "error": null,
-    "id": "chatcmpl-8sfP87WIqqMjUT9xsvCDjlQDpvhD9",
+    "id": "chatcmpl-8t1sPGJMMpXwlKqF20Cyrn8gjUDi0",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -366,7 +238,7 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_1gSgCu87axMeDROJgZIVmp6N",
+              "id": "call_7JPjKUJrtIoHjOCOsIQCprDg",
               "type": "function",
               "function": {
                 "name": "printz",
@@ -378,16 +250,16 @@
       }
     ],
     "usage": {
-      "prompt_tokens": 550,
+      "prompt_tokens": 522,
       "completion_tokens": 17,
-      "total_tokens": 567
+      "total_tokens": 539
     }
   },
   "list my subnet mask": {
     "error": null,
-    "id": "chatcmpl-8sfP8OQ8ofkcd0zn4Vrn8H7xU1ll5",
+    "id": "chatcmpl-8t1sPz9hM94OGSt7vATcKWbbUT0Vt",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -398,11 +270,11 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_BMJeBiD7MvrLY7JO6IauJ4SJ",
+              "id": "call_ob8mmgs6PB59A7n10J7vDylr",
               "type": "function",
               "function": {
                 "name": "printz",
-                "arguments": "{\"command\":\"ipconfig | grep 'Subnet Mask'\"}"
+                "arguments": "{\"command\":\"ip -o -f inet addr show | awk '/scope global/ {print $4}'\"}"
               }
             }
           ]
@@ -410,39 +282,48 @@
       }
     ],
     "usage": {
-      "prompt_tokens": 549,
-      "completion_tokens": 22,
-      "total_tokens": 571
+      "prompt_tokens": 521,
+      "completion_tokens": 32,
+      "total_tokens": 553
     }
   },
-  "please respond in a regular message, not using any of the supplied tools": {
+  "monitor CPU and memory usage and alert if too high": {
     "error": null,
-    "id": "chatcmpl-8sfP80fqvlkffObxmwrTkF2DuG4Xq",
+    "id": "chatcmpl-8t1sPwnhPK0mFV8RBTaMyqGztCOfj",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
         "index": 0,
-        "finish_reason": "stop",
+        "finish_reason": "tool_calls",
         "message": {
-          "content": "Understood. Please provide the details of the function you would like me to call.",
+          "content": null,
           "role": "assistant",
-          "tool_calls": null
+          "tool_calls": [
+            {
+              "id": "call_e0bETdduHNjSjj38JkEK1yWr",
+              "type": "function",
+              "function": {
+                "name": "printz",
+                "arguments": "{\"command\":\"while true; do if [[ $(ps -eo %mem,%cpu,pid,user,args --sort=-%mem | head -n 2 | awk 'NR\u003e1{print $1}') \u003e 90 || $(ps -eo %mem,%cpu,pid,user,args --sort=-%cpu | head -n 2 | awk 'NR\u003e1{print $2}') \u003e 90 ]]; then echo 'High CPU or Memory usage detected'; fi; sleep 5; done\"}"
+              }
+            }
+          ]
         }
       }
     ],
     "usage": {
-      "prompt_tokens": 559,
-      "completion_tokens": 18,
-      "total_tokens": 577
+      "prompt_tokens": 527,
+      "completion_tokens": 112,
+      "total_tokens": 639
     }
   },
   "rename all files in the current directory to contain the word awesome": {
     "error": null,
-    "id": "chatcmpl-8sfP8oRKxJGd6mQzKeMkxh6lVKO00",
+    "id": "chatcmpl-8t1sPpASrOMKaLnFfXvO15aNlHriV",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -453,11 +334,11 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_EO0q0tBuqxRo4GS1u6bW7lWz",
+              "id": "call_kONt7z9zJAds4bIWtH0MdGYf",
               "type": "function",
               "function": {
                 "name": "printz",
-                "arguments": "{\"command\":\"for file in *; do mv \\\"$file\\\" \\\"awesome_$file\\\"; done\"}"
+                "arguments": "{\"command\":\"for file in *; do mv \\\"$file\\\" \\\"${file/./_awesome.}\\\"; done\"}"
               }
             }
           ]
@@ -465,16 +346,16 @@
       }
     ],
     "usage": {
-      "prompt_tokens": 557,
-      "completion_tokens": 30,
-      "total_tokens": 587
+      "prompt_tokens": 529,
+      "completion_tokens": 34,
+      "total_tokens": 563
     }
   },
   "set up a cron job to run a script every day at midnight": {
     "error": null,
-    "id": "chatcmpl-8sfP8bOuVkrY7f0tM0kdFNizBKHIK",
+    "id": "chatcmpl-8t1sPFUyW1K5C3scE5I3KOSRB9el3",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -485,11 +366,11 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_lDlU77NUuzHgLG716wz1ZYmu",
+              "id": "call_Q4zjuITrLirxJp794Fd5RLOd",
               "type": "function",
               "function": {
                 "name": "printz",
-                "arguments": "{\"command\":\"(crontab -l ; echo '0 0 * * * /path/to/your/script.sh') | crontab -\"}"
+                "arguments": "{\"command\":\"(crontab -l ; echo \\\"0 0 * * * /path/to/your/script.sh\\\") | crontab -\"}"
               }
             }
           ]
@@ -497,16 +378,16 @@
       }
     ],
     "usage": {
-      "prompt_tokens": 558,
+      "prompt_tokens": 530,
       "completion_tokens": 41,
-      "total_tokens": 599
+      "total_tokens": 571
     }
   },
   "summarize reddit.com": {
     "error": null,
-    "id": "chatcmpl-8sfP8y1RWXs1R617yMbTuYb1Bd8yV",
+    "id": "chatcmpl-8t1sPF9AdsgSwXazAilALNzT3Yrrm",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -517,11 +398,11 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_gMqzzIMp09yNWgEgf4zlxJpm",
+              "id": "call_xKaIwNAYIBERbiSkEMvTpVgD",
               "type": "function",
               "function": {
                 "name": "crawl_web",
-                "arguments": "{\"purpose\":\"summarize reddit.com\",\"url\":\"https://www.reddit.com\"}"
+                "arguments": "{\"purpose\":\"Summarize Reddit.com\",\"url\":\"https://www.reddit.com\"}"
               }
             }
           ]
@@ -529,16 +410,16 @@
       }
     ],
     "usage": {
-      "prompt_tokens": 550,
+      "prompt_tokens": 522,
       "completion_tokens": 27,
-      "total_tokens": 577
+      "total_tokens": 549
     }
   },
-  "watch star wars in the terminal": {
+  "summarize the latest headline": {
     "error": null,
-    "id": "chatcmpl-8sfP8ZYFHRITgiagFSmYkBQVd8ora",
+    "id": "chatcmpl-8t1sPBdsXURmJpOmKDGTxZY0UKBeE",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -549,7 +430,39 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_UmpEwob8uVror3V8CPk9NUfG",
+              "id": "call_S57GA3IIkbeF9mTCE1E7fX01",
+              "type": "function",
+              "function": {
+                "name": "crawl_web",
+                "arguments": "{\"purpose\":\"fetch the latest headline\",\"url\":\"https://www.bbc.com/news\"}"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 523,
+      "completion_tokens": 28,
+      "total_tokens": 551
+    }
+  },
+  "watch star wars in my terminal": {
+    "error": null,
+    "id": "chatcmpl-8t1sPUwkTH9808vU63we48Sxvtvwc",
+    "object": "chat.completion",
+    "created": 1708125945,
+    "model": "gpt-3.5-turbo-0125",
+    "choices": [
+      {
+        "index": 0,
+        "finish_reason": "tool_calls",
+        "message": {
+          "content": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "id": "call_AqWcs8olS100brze8uaic6I7",
               "type": "function",
               "function": {
                 "name": "printz",
@@ -561,16 +474,16 @@
       }
     ],
     "usage": {
-      "prompt_tokens": 551,
+      "prompt_tokens": 523,
       "completion_tokens": 21,
-      "total_tokens": 572
+      "total_tokens": 544
     }
   },
-  "what is the first headline from bbc.com?": {
+  "what color do elephants tend to be?": {
     "error": null,
-    "id": "chatcmpl-8sfP8dcWflV9PtEF7cCBByKSkEPYJ",
+    "id": "chatcmpl-8t1sPnjIeRccmRdFg4UCyAZUG6CgZ",
     "object": "chat.completion",
-    "created": 1708039562,
+    "created": 1708125945,
     "model": "gpt-3.5-turbo-0125",
     "choices": [
       {
@@ -581,11 +494,11 @@
           "role": "assistant",
           "tool_calls": [
             {
-              "id": "call_0znfqXPkeADRLPwlyuAih0AQ",
+              "id": "call_ambYmuLyiUhgnTJwlNdJGEDR",
               "type": "function",
               "function": {
                 "name": "crawl_web",
-                "arguments": "{\"purpose\":\"get the first headline from bbc.com\",\"url\":\"https://www.bbc.com/\"}"
+                "arguments": "{\"purpose\":\"To provide information on the color of elephants.\",\"url\":\"https://www.worldwildlife.org/stories/what-color-are-elephants\"}"
               }
             }
           ]
@@ -593,9 +506,41 @@
       }
     ],
     "usage": {
-      "prompt_tokens": 554,
+      "prompt_tokens": 525,
+      "completion_tokens": 42,
+      "total_tokens": 567
+    }
+  },
+  "what is the first headline from bbc.com?": {
+    "error": null,
+    "id": "chatcmpl-8t1sP4HHhRAWna0gaq9YlbxFsc8fk",
+    "object": "chat.completion",
+    "created": 1708125945,
+    "model": "gpt-3.5-turbo-0125",
+    "choices": [
+      {
+        "index": 0,
+        "finish_reason": "tool_calls",
+        "message": {
+          "content": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "id": "call_On6sHzwjSKJrwkhVyVeYzKLu",
+              "type": "function",
+              "function": {
+                "name": "crawl_web",
+                "arguments": "{\"purpose\":\"Retrieve the first headline from BBC.com\",\"url\":\"https://www.bbc.com/\"}"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 526,
       "completion_tokens": 31,
-      "total_tokens": 585
+      "total_tokens": 557
     }
   }
 }

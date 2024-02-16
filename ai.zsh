@@ -47,8 +47,6 @@ function ai() {
     return
   fi
 
-  echo $resp
-
   # Look weird? In order to make sure we can print -z to the command buffer, we
   # break apart the process of request / handle, so we can put things that take
   # a single step onto the output, and those that will be more verbose over
