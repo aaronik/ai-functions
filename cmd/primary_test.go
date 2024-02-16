@@ -18,9 +18,8 @@ This tests:
 * Prompt tests, assuring the prompt returned the expected function name
 **************/
 
-// TODO Test message responses
-// TODO Test error responses
 func TestPrimary(t *testing.T) {
+	// read saved responses
 	file, err := os.ReadFile("../openai_responses.json")
 	if err != nil {
 		log.Fatalf("unable to read file: %v", err)
@@ -32,8 +31,9 @@ func TestPrimary(t *testing.T) {
 		log.Fatalf("unable to unmarshal json: %v", err)
 	}
 
-	// Json is shaped { userInput: response }
+	// for each test case
 	for _, promptTestDatum := range PromptTestData {
+		// Json is shaped { userInput: response }
 		userInput := promptTestDatum.UserInput
 		wantedFunctionName := promptTestDatum.WantedFunctionName
 		shouldBeMessage := promptTestDatum.WantedFunctionName == "message"
@@ -48,6 +48,7 @@ func TestPrimary(t *testing.T) {
 			panic(err)
 		}
 
+		// mock server
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
@@ -59,53 +60,61 @@ func TestPrimary(t *testing.T) {
 		model := "fake-model"
 		systemContent := "Linux art76 6.5.0-15-generic #15~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Fri Jan 12 18:54:30 UTC 2 x86_64 x86_64 x86_64 GNU/Linux"
 
-		// Fetch, type, marshal response
 		resp, err := PerformPrimaryRequest(model, userInput, systemContent, server.URL)
+
+		gotFunctionName := getToolcallFunctionName(*resp)
+
+		var outputBuffer bytes.Buffer
+
+		// Put response through output system, sensitive to error codes
+		HandlePrimaryResponse(*resp, &outputBuffer)
+
+		output := outputBuffer.String()
+
+		if shouldBeMessage {
+			content := getMessageContent(*resp)
+			if content == "" {
+				t.Errorf("Failed Prompt Test:"+
+					"\nwant: message"+
+					"\ngot: %v"+
+					"\nuserInput: %v"+
+					"\noutput: %v",
+					userInput,
+					gotFunctionName,
+					output,
+				)
+			}
+
+			// If it's a message, no sense going through tool call function names
+			continue
+		}
 
 		// Prompt test. Ensures all examples are giving the function names
 		// we expect.
-		// Messages are treated differently since they're not a function name.
 		// The function names are gotten from actual openai responses hydrated via
 		// `make hydrate`.
-		if gotFunctionName := getToolcallFunctionName(*resp); gotFunctionName != "" {
-			if gotFunctionName != wantedFunctionName {
-				t.Errorf("Failed Prompt Test: \n"+
-					"userInput: %v\n"+
-					"want: %v\n"+
-					"got: %v",
-					userInput,
-					wantedFunctionName,
-					gotFunctionName,
-				)
-			}
-		} else if shouldBeMessage {
-			content := getMessageContent(*resp)
-			if content == "" {
-				t.Errorf("Failed Prompt Test: \n"+
-					"userInput: %v\n"+
-					"want: message\n"+
-					"got: %v",
-					userInput,
-					getToolcallFunctionName(*resp),
-				)
-			}
+		if gotFunctionName != wantedFunctionName {
+			t.Errorf("Failed Prompt Test:"+
+				"\nwant: %v"+
+				"\ngot: %v"+
+				"\nuserInput: %v"+
+				"\nresp: %v",
+				wantedFunctionName,
+				gotFunctionName,
+				userInput,
+				output,
+			)
+
+			// If function name is wrong, single space check below won't work, so avoid it
+			continue
 		}
-
-		var outputCatch bytes.Buffer
-
-		// Put response through output system, sensitive to error codes
-		HandlePrimaryResponse(*resp, &outputCatch)
-
-		// Accumulate the terminal output
-		output := outputCatch.String()
 
 		// Ensure output starts with function name and one space, as sh script expects
 		if !strings.HasPrefix(output, wantedFunctionName+" ") ||
 			strings.HasPrefix(output, wantedFunctionName+"  ") {
-			t.Error(
-				"primary handler did not begin response with",
-				wantedFunctionName,
-				"followed by a single space:",
+			t.Errorf(
+				"Output did not start with function name followed by a single space:"+
+					"\noutput: %v",
 				output,
 			)
 		}
@@ -123,11 +132,11 @@ func TestPrimary_Error(t *testing.T) {
 		t.Error("Error json could not be unmarshalled into response type")
 	}
 
-	var outputCatch bytes.Buffer
+	var outputBuffer bytes.Buffer
 
-	HandlePrimaryResponse(obj, &outputCatch)
+	HandlePrimaryResponse(obj, &outputBuffer)
 
-	output := outputCatch.String()
+	output := outputBuffer.String()
 
 	// Ensure output starts with error and one space, as sh script expects
 	if !strings.HasPrefix(output, "error ") ||
