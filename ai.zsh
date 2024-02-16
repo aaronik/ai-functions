@@ -37,6 +37,9 @@ function ai() {
   model="${OPENAI_API_MODEL:-gpt-3.5-turbo-0125}"
   # model="${OPENAI_API_MODEL:-gpt-4-turbo-preview}"
 
+  # Our response is whatever the go app prints to stdout running its 'primary'
+  # subcommand. This makes debugging the go app a bit tricky. Easiest to log in
+  # the go tests or echoing resp here.
   resp=$(cd $app_dir; go run main.go primary --model "$model"  --system_content "$system_content" --prompt "$prompt"2>&1)
   if ! [ "$?" = "0" ]; then
     echo "initial call to openai failure: $resp" >&2
@@ -44,10 +47,12 @@ function ai() {
     return
   fi
 
+  echo $resp
+
   # Look weird? In order to make sure we can print -z to the command buffer, we
-  # break apart the process of request / handle, so we can put things that
-  # take a single step onto the output, and those that will be more verbose
-  # over multiple steps, to print themselves from the go app.
+  # break apart the process of request / handle, so we can put things that take
+  # a single step onto the output, and those that will be more verbose over
+  # multiple steps, to print themselves from the go app.
   if [[ $resp == printz\ * ]]; then
     print -z "${resp:7}"
   elif [[ $resp == info\ * ]]; then

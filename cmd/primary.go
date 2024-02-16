@@ -142,11 +142,13 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 // 	},
 // },
 
+// Fetch, type, marshal
 func PerformPrimaryRequest(model string, userInput string, systemContent string, url string) (*OpenAICompletionResponse, error) {
 	if url == "" {
 		url = "https://api.openai.com/v1/chat/completions"
 	}
 
+	// payload
 	prompt := buildPrimaryPrompt(userInput, model, systemContent)
 
 	promptBytes, err := json.Marshal(prompt)
@@ -154,7 +156,7 @@ func PerformPrimaryRequest(model string, userInput string, systemContent string,
 		return nil, err
 	}
 
-	// Create an HTTP request
+	// req
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(promptBytes))
 	if err != nil {
 		return nil, err
@@ -164,6 +166,7 @@ func PerformPrimaryRequest(model string, userInput string, systemContent string,
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", openaiApiKey))
 	req.Header.Add("Content-Type", "application/json")
 
+	// send
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -171,11 +174,13 @@ func PerformPrimaryRequest(model string, userInput string, systemContent string,
 	}
 	defer resp.Body.Close()
 
+	// receive
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
+	// resp
 	var obj OpenAICompletionResponse
 	if err := json.Unmarshal(body, &obj); err != nil {
 		return nil, err
