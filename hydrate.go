@@ -19,6 +19,7 @@ func main() {
 	responsesJson = make(map[string]interface{})
 
 	model := os.Getenv("OPENAI_API_MODEL")
+	systemContent := "Linux art76 6.5.0-15-generic #15~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Fri Jan 12 18:54:30 UTC 2 x86_64 x86_64 x86_64 GNU/Linux"
 
 	// Iterate through each prompt, populating the json file for each response
 	var wg sync.WaitGroup
@@ -28,7 +29,7 @@ func main() {
 		go func(promptTestDatum cmd.PromptTestDatum) {
 			defer wg.Done()
 			userInput := promptTestDatum.UserInput
-			obj, err := cmd.PerformPrimaryRequest(model, userInput, "", "")
+			obj, err := cmd.PerformPrimaryRequest(model, userInput, systemContent, "")
 			fmt.Println("hydration complete for:", userInput)
 			if err != nil {
 				log.Fatal("Primary Request failed:", err)

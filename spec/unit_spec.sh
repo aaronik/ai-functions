@@ -182,7 +182,7 @@ Describe 'When asked for a bash one liner'
   End
 End
 
-# Tests echo
+# Tests info
 Describe 'When asked for an info'
   go() {
     printf "info works"

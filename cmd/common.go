@@ -116,6 +116,8 @@ func getToolcallArguments(resp OpenAICompletionResponse) string {
 func getToolcallFunctionName(resp OpenAICompletionResponse) string {
 	if resp.Choices != nil && len(resp.Choices) > 0 && resp.Choices[0].Message.ToolCalls != nil && len(*resp.Choices[0].Message.ToolCalls) > 0 {
 		return (*resp.Choices[0].Message.ToolCalls)[0].Function.Name
+	} else if content := getMessageContent(resp); content != "" {
+		return "message"
 	} else {
 		return ""
 	}

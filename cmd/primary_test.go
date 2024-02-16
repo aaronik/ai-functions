@@ -36,7 +36,6 @@ func TestPrimary(t *testing.T) {
 		// Json is shaped { userInput: response }
 		userInput := promptTestDatum.UserInput
 		wantedFunctionName := promptTestDatum.WantedFunctionName
-		shouldBeMessage := promptTestDatum.WantedFunctionName == "message"
 
 		response, ok := responses[userInput]
 		if !ok {
@@ -71,24 +70,6 @@ func TestPrimary(t *testing.T) {
 
 		output := outputBuffer.String()
 
-		if shouldBeMessage {
-			content := getMessageContent(*resp)
-			if content == "" {
-				t.Errorf("Failed Prompt Test:"+
-					"\nwant: message"+
-					"\ngot: %v"+
-					"\nuserInput: %v"+
-					"\noutput: %v",
-					userInput,
-					gotFunctionName,
-					output,
-				)
-			}
-
-			// If it's a message, no sense going through tool call function names
-			continue
-		}
-
 		// Prompt test. Ensures all examples are giving the function names
 		// we expect.
 		// The function names are gotten from actual openai responses hydrated via
@@ -98,7 +79,7 @@ func TestPrimary(t *testing.T) {
 				"\nwant: %v"+
 				"\ngot: %v"+
 				"\nuserInput: %v"+
-				"\nresp: %v",
+				"\nresponse: %v",
 				wantedFunctionName,
 				gotFunctionName,
 				userInput,

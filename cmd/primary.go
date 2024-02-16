@@ -191,16 +191,16 @@ func HandlePrimaryResponse(resp OpenAICompletionResponse, w io.Writer) {
 		return
 	}
 
-	if message := getMessageContent(resp); message != "" {
-		fmt.Fprintln(w, "message", message)
-		return
-	}
-
 	functionName := getToolcallFunctionName(resp)
 	toolCallArgs := getToolcallArguments(resp)
 
-	if functionName == "" || toolCallArgs == "" {
-		fmt.Fprintln(w, "error finding function information")
+	if functionName == "" {
+		fmt.Fprintln(w, "error finding function name")
+		return
+	}
+
+	if toolCallArgs == "" && functionName != "message" {
+		fmt.Fprintln(w, "error finding function arguments")
 	}
 
 	switch functionName {
@@ -212,6 +212,8 @@ func HandlePrimaryResponse(resp OpenAICompletionResponse, w io.Writer) {
 		var commandObj Command
 		json.Unmarshal([]byte(toolCallArgs), &commandObj)
 		fmt.Fprintln(w, "printz", commandObj.Command)
+	case "message":
+		fmt.Fprintln(w, "message", getMessageContent(resp))
 	case "info":
 		type Str struct {
 			Str string `json:"str"`
