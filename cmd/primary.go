@@ -22,11 +22,11 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 			{"role": "user", "content": "User's system: " + systemContent},
 			{"role": "user", "content": prompt},
 			{"role": "system", "content": "You are a bash one liner creation system. Your primary purpose is to create bash commands that achieve what the user is requesting, and call the printz tool with them."},
-			{"role": "system", "content": "You are allowed to return normal message format, but do so sparingly."},
-			{"role": "system", "content": "use crawl_web for information you're otherwise unable to provide. Avoid when possible."},
-			{"role": "system", "content": "use gen_image only when explicitly asked for an image."},
+			{"role": "system", "content": "Sometimes the user will call this seeking information that's not a bash command. If you know the information they're asking for, respond with your normal message response type (not using tool calls)."},
+			{"role": "system", "content": "use crawl_web for information you're otherwise unable to provide. Avoid crawl_web when possible."},
+			{"role": "system", "content": "use gen_image only when explicitly asked for an image, like 'generate an image of ..', or 'make a high quality image of ..'."},
 			{"role": "user", "content": "only call a single function"},
-			{"role": "user", "content": "don't ask for permission to call a function"},
+			{"role": "user", "content": "don't ask for permission to call a function, just call it."},
 		},
 		"tools": []map[string]interface{}{
 			{
@@ -46,23 +46,6 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 					},
 				},
 			},
-			// {
-			// 	"type": "function",
-			// 	"function": map[string]interface{}{
-			// 		"name":        "info",
-			// 		"description": "use this if the user asked for information which can not be represented as a bash one liner. ex info(There are 4 quarts in a gallon), info(There have been 46 US presidents). Do not call this with a bash one liner, do not provide a bash one liner with an explanation. If you have a response that's not perfect but is ok, use this.",
-			// 		"parameters": map[string]interface{}{
-			// 			"type": "object",
-			// 			"properties": map[string]interface{}{
-			// 				"str": map[string]interface{}{
-			// 					"type":        "string",
-			// 					"description": "The information. NO BASH ONE LINERS. Never call like: info(To do such and such, use this command: <some command>)",
-			// 				},
-			// 			},
-			// 			"required": []string{"str"},
-			// 		},
-			// 	},
-			// },
 			{
 				"type": "function",
 				"function": map[string]interface{}{
@@ -113,6 +96,23 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 					},
 				},
 			},
+			// {
+			// 	"type": "function",
+			// 	"function": map[string]interface{}{
+			// 		"name":        "info",
+			// 		"description": "use this if the user asked for information which can not be represented as a bash one liner. ex info(There are 4 quarts in a gallon), info(There have been 46 US presidents). Do not call this with a bash one liner, do not provide a bash one liner with an explanation. If you have a response that's not perfect but is ok, use this.",
+			// 		"parameters": map[string]interface{}{
+			// 			"type": "object",
+			// 			"properties": map[string]interface{}{
+			// 				"str": map[string]interface{}{
+			// 					"type":        "string",
+			// 					"description": "The information. NO BASH ONE LINERS. Never call like: info(To do such and such, use this command: <some command>)",
+			// 				},
+			// 			},
+			// 			"required": []string{"str"},
+			// 		},
+			// 	},
+			// },
 		},
 	}
 
