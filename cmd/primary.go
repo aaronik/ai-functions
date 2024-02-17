@@ -96,6 +96,7 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 					},
 				},
 			},
+			// // Commented to test using message instead of this
 			// {
 			// 	"type": "function",
 			// 	"function": map[string]interface{}{
