@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-if ! $(which curl 1>/dev/null) || ! $(which jq 1>/dev/null) ; then
-  printf "$0 "
-  echo 'requires `curl` and `jq`'
+if ! which curl 1>/dev/null || ! which jq 1>/dev/null ; then
+  printf "%s " "$0"
+  echo "requires \`curl\` and \`jq\`"
   exit 1
 fi
 
