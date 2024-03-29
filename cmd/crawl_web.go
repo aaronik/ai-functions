@@ -45,8 +45,9 @@ func buildCrawlWebRequest(carryoverJson string, model string) map[string]interfa
 		"temperature": 0,
 		"model":       model,
 		"messages": []map[string]interface{}{
+			{"role": "system", "content": "You are an information extraction system. You'll be given a parsed web page and a goal, usually to extract information from the parsed page. You should call report_information with the extracted information."},
 			{"role": "user", "content": page},
-			{"role": "user", "content": purpose},
+			{"role": "system", "content": purpose},
 			{"role": "user", "content": "only call a single tool/function once"},
 		},
 		"tools": []map[string]interface{}{
