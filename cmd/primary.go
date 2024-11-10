@@ -1,4 +1,5 @@
 /*
+TODO Rename primary to "coordinator"
 Copyright © 2024 Aaron Sullivan (@aaronik) <aar.sully@gmail.com>
 */
 

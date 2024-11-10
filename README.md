@@ -33,14 +33,12 @@ source /path/to/ai-functions/ai.zsh # Source as zsh function so `print -z` works
 ### Examples
 
 #### ai
-* `ai list all open ports`
-* `ai command to show me the weather`
-* `ai watch star wars in the terminal`
-* `ai monitor CPU and memory usage and alert if too high`
-* `ai convert all jpg images in a folder to png`
-* `ai create a new user with sudo privileges`
+* `ai list all open udp ports`
+* `ai get a shell in the first running docker image`
+* `ai convert all jpg images in this folder to png`
 * `ai set up a cron job to run a script every day at midnight`
-* `lsusb | ai how many USB drives are plugged in`
+* `ai watch star wars in the terminal`
+* `lsusb | ai from this input, how many USB drives are plugged in?`
 * `ifconfig | ai how much total outbound traffic`
 * `tail -20 /var/log/syslog | ai is there any unusual activity in this log?`
 * `cat /var/log/auth.log | ai are there any suspicious login attempts here?`

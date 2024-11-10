@@ -34,8 +34,8 @@ function ai() {
     prompt="$prompt\n\nADDITIONAL CONTEXT: $piped"
   fi
 
-  model="${OPENAI_API_MODEL:-gpt-3.5-turbo-0125}"
-  # model="${OPENAI_API_MODEL:-gpt-4-turbo-preview}"
+  model="${OPENAI_API_MODEL:-gpt-4o-mini}"
+  # model="${OPENAI_API_MODEL:-gpt-4o}"
 
   # Our response is whatever the go app prints to stdout running its 'primary'
   # subcommand. This makes debugging the go app a bit tricky. Easiest to log in
