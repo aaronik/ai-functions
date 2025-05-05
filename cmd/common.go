@@ -18,7 +18,7 @@ type OpenAICompletionResponse struct {
 	Model   string `json:"model"`
 	Choices []struct {
 		Index        int         `json:"index"`
-		Logprobs     interface{} `json:"logprobs,omitempty"`
+		Logprobs     any `json:"logprobs,omitempty"`
 		FinishReason string      `json:"finish_reason"`
 		Message      struct {
 			Content   *string `json:"content"`
@@ -62,7 +62,7 @@ type OpenAIImageGenerationResponse struct {
 }
 
 // Add this function to pretty print the response
-func prettyPrint(i interface{}) string {
+func prettyPrint(i any) string {
 	s, _ := json.MarshalIndent(i, "", "  ")
 	return string(s)
 }

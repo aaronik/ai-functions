@@ -15,7 +15,7 @@ import (
 func main() {
 	responseFileName := "openai_responses.json"
 
-	var responsesJson map[string]interface{}
+	var responsesJson map[string]any
 	responsesJson = make(map[string]interface{})
 
 	model := os.Getenv("OPENAI_API_MODEL")

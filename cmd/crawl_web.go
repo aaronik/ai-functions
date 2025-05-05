@@ -15,7 +15,7 @@ import (
 	"os/exec"
 )
 
-func buildCrawlWebRequest(carryoverJson string, model string) map[string]interface{} {
+func buildCrawlWebRequest(carryoverJson string, model string) map[string]any {
 	type Json struct {
 		Url     string `json:"url"`
 		Purpose string `json:"purpose"`
@@ -40,26 +40,26 @@ func buildCrawlWebRequest(carryoverJson string, model string) map[string]interfa
 	}
 	page := string(output)
 
-	Data := map[string]interface{}{
+	Data := map[string]any{
 		"max_tokens":  703,
 		"temperature": 0,
 		"model":       model,
-		"messages": []map[string]interface{}{
+		"messages": []map[string]any{
 			{"role": "system", "content": "You are an information extraction system. You'll be given a parsed web page and a goal, usually to extract information from the parsed page. You should call report_information with the extracted information."},
 			{"role": "user", "content": page},
 			{"role": "system", "content": purpose},
 			{"role": "user", "content": "only call a single tool/function once"},
 		},
-		"tools": []map[string]interface{}{
+		"tools": []map[string]any{
 			{
 				"type": "function",
-				"function": map[string]interface{}{
+				"function": map[string]any{
 					"name":        "report_information",
 					"description": "DEFAULT - Report with the requested information.",
-					"parameters": map[string]interface{}{
+					"parameters": map[string]any{
 						"type": "object",
-						"properties": map[string]interface{}{
-							"str": map[string]interface{}{
+						"properties": map[string]any{
+							"str": map[string]any{
 								"type":        "string",
 								"description": "The information the user is looking for from the supplied web page.",
 							},

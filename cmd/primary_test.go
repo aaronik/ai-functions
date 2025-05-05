@@ -25,7 +25,7 @@ func TestPrimary(t *testing.T) {
 		log.Fatalf("unable to read file: %v", err)
 	}
 
-	var responses map[string]interface{}
+	var responses map[string]any
 	err = json.Unmarshal(file, &responses)
 	if err != nil {
 		log.Fatalf("unable to unmarshal json: %v", err)

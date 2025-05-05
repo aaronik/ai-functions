@@ -34,7 +34,7 @@ function ai() {
     prompt="$prompt\n\nADDITIONAL CONTEXT: $piped"
   fi
 
-  model="${OPENAI_API_MODEL:-gpt-4o-mini}"
+  model="${OPENAI_API_MODEL:-gpt-4.1-mini}"
   # model="${OPENAI_API_MODEL:-gpt-4o}"
 
   # Our response is whatever the go app prints to stdout running its 'primary'

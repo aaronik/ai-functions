@@ -14,31 +14,33 @@ import (
 	"os"
 )
 
-func buildPrimaryPrompt(prompt string, model string, systemContent string) map[string]interface{} {
-	Data := map[string]interface{}{
+func buildPrimaryPrompt(prompt string, model string, systemContent string) map[string]any {
+	Data := map[string]any{
 		"max_tokens":  703,
 		"temperature": 0,
 		"model":       model,
-		"messages": []map[string]interface{}{
+
+		"messages": []map[string]any{
 			{"role": "user", "content": "User's system: " + systemContent},
 			{"role": "user", "content": prompt},
-			{"role": "system", "content": "You are a bash one liner creation system. Your primary purpose is to create bash commands that achieve what the user is requesting, and call the printz tool with them."},
-			{"role": "system", "content": "Sometimes the user will call this seeking information that's not a bash command. If you know the information they're asking for, respond with your normal message response type (not using tool calls)."},
+			{"role": "system", "content": "You are a helpful command line based ai assistant program. Your job is to utilize the supplied tools to best respond to the user's requests."},
+			{"role": "system", "content": "use printz to supply a bash or zsh command, if the user has asked for a command."},
 			{"role": "system", "content": "use crawl_web for information you're otherwise unable to provide. Avoid crawl_web when possible."},
 			{"role": "system", "content": "use gen_image only when explicitly asked for an image, like 'generate an image of ..', or 'make a high quality image of ..'."},
-			{"role": "user", "content": "only call a single function"},
-			{"role": "user", "content": "don't ask for permission to call a function, just call it."},
+			// {"role": "user", "content": "only call a single function"},
 		},
-		"tools": []map[string]interface{}{
+
+		"tools": []map[string]any{
+
 			{
 				"type": "function",
-				"function": map[string]interface{}{
+				"function": map[string]any{
 					"name":        "printz",
 					"description": "Use zsh's print -z to place the command on the command buffer. ex: printz(netstat -u), printz(lsof -n).",
-					"parameters": map[string]interface{}{
+					"parameters": map[string]any{
 						"type": "object",
-						"properties": map[string]interface{}{
-							"command": map[string]interface{}{
+						"properties": map[string]any{
+							"command": map[string]any{
 								"type":        "string",
 								"description": "The bash one liner",
 							},
@@ -47,27 +49,28 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 					},
 				},
 			},
+
 			{
 				"type": "function",
-				"function": map[string]interface{}{
+				"function": map[string]any{
 					"name":        "gen_image",
 					"description": "use this IF AND ONLY IF the user is EXPLICITLY requesting an image, with verbiage like Make me an image or Generate an image.",
-					"parameters": map[string]interface{}{
+					"parameters": map[string]any{
 						"type": "object",
-						"properties": map[string]interface{}{
-							"n": map[string]interface{}{
+						"properties": map[string]any{
+							"n": map[string]any{
 								"type":        "integer",
 								"description": "1, unless otherwise specified by user",
 							},
-							"model": map[string]interface{}{
+							"model": map[string]any{
 								"type":        "string",
 								"description": "Default to dall-e-2. If the user has requested a high quality image, then dall-e-3",
 							},
-							"size": map[string]interface{}{
+							"size": map[string]any{
 								"type":        "string",
 								"description": "default to 1024x1024 unless the user specifies they want a specific size. If they specify a size, follow this guide: dall-e-2 supports sizes: 256x256 (small), 512x512 (medium), or 1024x1024 (default/large). dall-e-3 supports sizes: 1024x1024 (default), 1024x1792 (portrait) or 1792x1024 (landscape). If multiple images, all use the same size.",
 							},
-							"prompt": map[string]interface{}{
+							"prompt": map[string]any{
 								"type":        "string",
 								"description": "What the user input, minus the parts about image quality, size, and portrait/landscape",
 							},
@@ -76,19 +79,20 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 					},
 				},
 			},
+
 			{
 				"type": "function",
-				"function": map[string]interface{}{
+				"function": map[string]any{
 					"name":        "crawl_web",
 					"description": "Crawl the web for more information.",
-					"parameters": map[string]interface{}{
+					"parameters": map[string]any{
 						"type": "object",
-						"properties": map[string]interface{}{
-							"url": map[string]interface{}{
+						"properties": map[string]any{
+							"url": map[string]any{
 								"type":        "string",
 								"description": "Fully qualified URL",
 							},
-							"purpose": map[string]interface{}{
+							"purpose": map[string]any{
 								"type":        "string",
 								"description": "A detailed description of the user's needs.",
 							},
@@ -97,49 +101,50 @@ func buildPrimaryPrompt(prompt string, model string, systemContent string) map[s
 					},
 				},
 			},
-			// // Commented to test using message instead of this
-			// {
-			// 	"type": "function",
-			// 	"function": map[string]interface{}{
-			// 		"name":        "info",
-			// 		"description": "use this if the user asked for information which can not be represented as a bash one liner. ex info(There are 4 quarts in a gallon), info(There have been 46 US presidents). Do not call this with a bash one liner, do not provide a bash one liner with an explanation. If you have a response that's not perfect but is ok, use this.",
-			// 		"parameters": map[string]interface{}{
-			// 			"type": "object",
-			// 			"properties": map[string]interface{}{
-			// 				"str": map[string]interface{}{
-			// 					"type":        "string",
-			// 					"description": "The information. NO BASH ONE LINERS. Never call like: info(To do such and such, use this command: <some command>)",
-			// 				},
-			// 			},
-			// 			"required": []string{"str"},
-			// 		},
-			// 	},
-			// },
 		},
 	}
 
 	return Data
 }
 
+// // Commented to test using message instead of this
+// {
+// 	"type": "function",
+// 	"function": map[string]any{
+// 		"name":        "info",
+// 		"description": "use this if the user asked for information which can not be represented as a bash one liner. ex info(There are 4 quarts in a gallon), info(There have been 46 US presidents). Do not call this with a bash one liner, do not provide a bash one liner with an explanation. If you have a response that's not perfect but is ok, use this.",
+// 		"parameters": map[string]any{
+// 			"type": "object",
+// 			"properties": map[string]any{
+// 				"str": map[string]any{
+// 					"type":        "string",
+// 					"description": "The information. NO BASH ONE LINERS. Never call like: info(To do such and such, use this command: <some command>)",
+// 				},
+// 			},
+// 			"required": []string{"str"},
+// 		},
+// 	},
+// },
+
 // // This is for text to speech. It works fine, but ATTOW I'm thinking I don't need it, so I'm
 // // going to leave it here for now.
 // {
 // 	"type": "function",
-// 	"function": map[string]interface{}{
+// 	"function": map[string]any{
 // 		"name":        "text_to_speech",
 // 		"description": "text_to_speech({ model: model, input: string, voice: voice }) - call this only if a user is explicitly asking you to say or speak something",
-// 		"parameters": map[string]interface{}{
+// 		"parameters": map[string]any{
 // 			"type": "object",
-// 			"properties": map[string]interface{}{
-// 				"model": map[string]interface{}{
+// 			"properties": map[string]any{
+// 				"model": map[string]any{
 // 					"type":        "string",
 // 					"description": "tts-1",
 // 				},
-// 				"input": map[string]interface{}{
+// 				"input": map[string]any{
 // 					"type":        "string",
 // 					"description": "The user input, minus the parts about what model and voice to use.",
 // 				},
-// 				"voice": map[string]interface{}{
+// 				"voice": map[string]any{
 // 					"type":        "string",
 // 					"description": "Default to onyx, unless there is a better match among: **alloy** - calm, androgynous, friendly. **echo** - factual, curt, male **fable** - intellectual, British, androgynous **onyx** - male, warm, smiling **nova** - female, humorless, cool **shimmer** - female, cool",
 // 				},
